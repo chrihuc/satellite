@@ -1,0 +1,9 @@
+# exclude everything except directory foo/bar
+#/*
+#!/foo
+#/foo/*
+#!/foo/bar 
+*.pyc
+*.cfg
+/log/*
+#constants.py
