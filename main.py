@@ -4,13 +4,10 @@ import threading
 import socket
 import time
 #import urllib2, os
-#import tf_class
+from tf_class import tiFo
 import constants
+import sys
 
-
-SERVER_IP_1   = '192.168.192.10'
-SERVER_IP_2   = '192.168.192.33'
-OUTPUTS_PORT = 5000
 
 PORT_NUMBER = 5005
 mySocket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
@@ -19,24 +16,29 @@ mySocket.bind( ('', PORT_NUMBER) )
 mySocket.listen(1)
 SIZE = 1024
 
+threadliste = []
+
 def send_heartbeat():
     while True:
+        for t in threadliste:
+            if not t in threading.enumerate():
+                #print t.name
+                sys.exit()        
         dicti = {}
         dicti['value'] = str(1)
         dicti['name'] = 'Hrtbt_' + constants.name
-        hbtsocket.sendto(str(dicti),(SERVER_IP_1,OUTPUTS_PORT)) 
-        #mySocket.sendto(str(dicti),(SERVER_IP_2,OUTPUTS_PORT))  
+        hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))  
         time.sleep(60)
 
-hb = threading.Thread(target=send_heartbeat, args = [])
+hb = threading.Thread(name="TiFo", target=send_heartbeat, args = [])
+threadliste.append(hb)
 hb.start()
 
-#vc = tf_class.TiFo()
+tf = tiFo()
 
 #tuer = tuer_switch()
 #t = threading.Thread(target=tuer.monitor, args = [])
 #t.start()
-
 
 
 while True:
@@ -51,6 +53,9 @@ while True:
             isdict = True
     except Exception as serr:
         isdict = False 
-    #print data
-    conn.send("True")
+    result = False
+    if isdict:
+        if 'Device' in data_ev:
+           result = tf.set_device(data_ev)  
+    conn.send(result)
     conn.close()           

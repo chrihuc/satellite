@@ -126,8 +126,28 @@ class tiFo:
         else:
             dicti['value'] = 0
             self.io16list.setTime(device,interrupt_mask, port)
-        print dicti
-        #mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
+
+    def set_io16_sub(self,cmd,io):
+        port = cmd.get('Port') 
+        if port  == 'A':
+            flopmask = tifo_config.IO16.get(io.get('addr'))[4]
+            if flopmask & cmd.get('Pin') == 0:
+                normpos = tifo_config.IO16.get(io.get('addr'))[7]
+                io.get('IO').set_port_monoflop('a', cmd.get('Pin'),((~normpos)&0b11111111),tifo_config.IO16.get(io.get('addr'))[6])
+            else:
+                mask = io.get('valueA') & ~ cmd.get('Pin')
+                self.io16list.setValues(io.get('IO'),mask,'a')
+                io.get('IO').set_port('a',mask)
+        else:
+            flopmask = tifo_config.IO16.get(io.get('addr'))[5]
+            if flopmask & cmd.get('Pin') == 0:
+                normpos = tifo_config.IO16.get(io.get('addr'))[8]
+                io.get('IO').set_port_monoflop('b', cmd.get('Pin'),((~normpos)&0b11111111),tifo_config.IO16.get(io.get('addr'))[6])            
+            else:
+                mask = io.get('valueB') & ~ cmd.get('Pin')
+                self.io16list.setValues(io.get('IO'),mask,'b')
+                io.get('IO').set_port('b',mask)       
 
     def set_io16(self,device,value):
         #koennte noch auch .set_selected_values(port, selection_mask, value_mask) umgeschrieben werden
@@ -144,67 +164,26 @@ class tiFo:
                     addr = cmd.get('UID') 
                     for io in self.io16list.liste:
                         if io.get('addr') == addr:
-                            port = cmd.get('Port') 
-                            if port  == 'A':
-                                mask = io.get('valueA') & ~ cmd.get('Pin')
-                                self.io16list.setValues(io.get('IO'),mask,'a')
-                                io.get('IO').set_port('a',mask)
-                                #io.get('IO').set_port_monoflop('a', tifo_config.IO16.get(io.get('addr'))[4],0,tifo_config.IO16.get(io.get('addr'))[6])
-                                print bin(mask)
-                            else:
-                                mask = io.get('valueB') & ~ cmd.get('Pin')
-                                self.io16list.setValues(io.get('IO'),mask,'b')
-                                io.get('IO').set_port('b',mask)
-                                print bin(mask)
+                            self.set_io16_sub(self,cmd,io)
             for cmd in cmds:                            
                 if cmd.get('Value') == 1: #erst alle auf Null setzen
                     addr = cmd.get('UID') 
                     for io in self.io16list.liste:
                         if io.get('addr') == addr:
-                            port = cmd.get('Port') 
-                            if port  == 'A':
-                                mask = io.get('valueA') | cmd.get('Pin')
-                                self.io16list.setValues(io.get('IO'),mask,'a')
-                                io.get('IO').set_port('a',mask)
-                                print bin(mask)
-                            else:
-                                mask = io.get('valueB') | cmd.get('Pin')
-                                self.io16list.setValues(io.get('IO'),mask,'b')
-                                io.get('IO').set_port('b',mask)
-                                print bin(mask)      
+                            self.set_io16_sub(self,cmd,io)    
         else:
             cmd = cmds
-            if cmd.get('Value') == 0: #erst alle auf Null setzen
-                addr = cmd.get('UID') 
-                for io in self.io16list.liste:
-                    if io.get('addr') == addr:
-                        port = cmd.get('Port') 
-                        if port  == 'A':
-                            mask = io.get('valueA') & ~ cmd.get('Pin')
-                            self.io16list.setValues(io.get('IO'),mask,'a')
-                            io.get('IO').set_port('a',mask)
-                            print bin(mask)
-                        else:
-                            mask = io.get('valueB') & ~ cmd.get('Pin')
-                            self.io16list.setValues(io.get('IO'),mask,'b')
-                            io.get('IO').set_port('b',mask)
-                            print bin(mask)                           
-            if cmd.get('Value') == 1: #erst alle auf Null setzen
-                addr = cmd.get('UID') 
-                for io in self.io16list.liste:
-                    if io.get('addr') == addr:
-                        port = cmd.get('Port') 
-                        if port  == 'A':
-                            mask = io.get('valueA') | cmd.get('Pin')
-                            self.io16list.setValues(io.get('IO'),mask,'a')
-                            io.get('IO').set_port('a',mask)
-                            print bin(mask)
-                        else:
-                            mask = io.get('valueB') | cmd.get('Pin')
-                            self.io16list.setValues(io.get('IO'),mask,'b')
-                            io.get('IO').set_port('b',mask)
-                            print bin(mask)             
-
+            addr = cmd.get('UID') 
+            for io in self.io16list.liste:
+                if io.get('addr') == addr:
+                    self.set_io16_sub(self,cmd,io)
+        return True                           
+         
+    def set_device(self, data_ev): 
+        if tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
+            return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))
+        else:
+            return False
 
     def cb_enumerate(self, uid, connected_uid, position, hardware_version, 
                      firmware_version, device_identifier, enumeration_type):
@@ -234,8 +213,8 @@ class tiFo:
                     self.io[-1].set_port_configuration('b', tifo_config.IO16.get(temp_uid)[1],'i',True)                    
                     self.io[-1].set_port_configuration('a', tifo_config.IO16.get(temp_uid)[2],'o',False)
                     self.io[-1].set_port_configuration('b', tifo_config.IO16.get(temp_uid)[3],'o',False)
-                    self.io[-1].set_port_monoflop('a', tifo_config.IO16.get(temp_uid)[4],0,tifo_config.IO16.get(temp_uid)[6])
-                    self.io[-1].set_port_monoflop('b', tifo_config.IO16.get(temp_uid)[5],0,tifo_config.IO16.get(temp_uid)[6])
+                    #self.io[-1].set_port_monoflop('a', tifo_config.IO16.get(temp_uid)[4],0,tifo_config.IO16.get(temp_uid)[6])
+                    #self.io[-1].set_port_monoflop('b', tifo_config.IO16.get(temp_uid)[5],0,tifo_config.IO16.get(temp_uid)[6])
                     self.io[-1].register_callback(self.io[-1].CALLBACK_INTERRUPT, partial( self.cb_interrupt, device = self.io[-1] ))
              
             if device_identifier == AmbientLight.DEVICE_IDENTIFIER:
@@ -368,34 +347,29 @@ if __name__ == "__main__":
     #sb = dist_us()
     tf = tiFo()
     time.sleep(2)
-    device = 'V01ZIM1RUM1DO01'
-    value = 1
-    if tifo_config.outputs.get(device) == 'IO16o':
-        tf.set_io16(device,value)
+    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+    data_ev['value'] = 1
+    tf.set_device(data_ev) 
         
     time.sleep(2)
-    device = 'V01ZIM1RUM1DO01'
-    value = 0
-    if tifo_config.outputs.get(device) == 'IO16o':
-        tf.set_io16(device,value) 
+    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+    data_ev['value'] = 0
+    tf.set_device(data_ev) 
         
     time.sleep(2)        
-    device = 'V01ZIM1RUM1DO02'
-    value = 1
-    if tifo_config.outputs.get(device) == 'IO16o':
-        tf.set_io16(device,value)    
+    data_ev['Device'] = 'V01ZIM1RUM1DO02'
+    data_ev['value'] = 1
+    tf.set_device(data_ev)   
 
     time.sleep(2)        
-    device = 'V01ZIM1RUM1DO03'
-    value = 1
-    if tifo_config.outputs.get(device) == 'IO16o':
-        tf.set_io16(device,value) 
+    data_ev['Device'] = 'V01ZIM1RUM1DO03'
+    data_ev['value'] = 1
+    tf.set_device(data_ev) 
     
     time.sleep(2)        
-    device = 'V01ZIM1RUM1DO01'
-    value = 1
-    if tifo_config.outputs.get(device) == 'IO16o':
-        tf.set_io16(device,value) 
+    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+    data_ev['value'] = 1
+    tf.set_device(data_ev) 
     raw_input('Press key to exit\n') # Use input() in Python 3   
     #sb.set_one_color(rot = 255)
     #raw_input('Press key to exit\n')   
