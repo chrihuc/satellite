@@ -110,13 +110,13 @@ class tiFo:
             thresUp = 3
         if thresUp > 9000:
             thresUp = 9000            
-        print illuminance, thresDown, thresUp
+        #print illuminance, thresDown, thresUp
         device.set_illuminance_callback_threshold('o', thresDown, thresUp)
         dicti = {}
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
         dicti['value'] = str(illuminance)
         dicti['name'] = name
-        print dicti
+        #print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
 
     def cb_interrupt(self, port, interrupt_mask, value_mask, device):
@@ -258,7 +258,7 @@ class tiFo:
 #                self.moist.register_callback(self.moist.CALLBACK_MOISTURE, self.cb_moisture)
             
             if not found:
-                print device_identifier
+                print connected_uid, uid, device_identifier
 
         
     def cb_connected(self, connected_reason):
