@@ -140,7 +140,7 @@ class tiFo:
         else:
             dicti['Value'] = 0
             self.io16list.setTime(device,interrupt_mask, port)
-        print name, value
+        print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
 
     def set_io16_sub(self,cmd,io):

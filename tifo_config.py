@@ -8,7 +8,7 @@ Created on Sat Apr  2 08:11:53 2016
 inputs = {'62efV1.m4d':'V01ZIM1RUM1HE01'}
 outputs = {'V01ZIM1RUM1DO01':'IO16o','V01ZIM1RUM1DO02':'IO16o','V01ZIM1RUM1DO03':'IO16o','V00...':'LEDs'}
 
-IO16 = {'62efV1.gox':(0b00111111,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,500,0b00111111,0b00000000), #(inputa,inputb,outputa,outputb,monoflopa,monoflopb,floptime[ms],normally open a, b)
+IO16 = {'62efV1.gox':(0b00111111,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,500,0b00000000,0b00000000), #(inputa,inputb,outputa,outputb,monoflopa,monoflopb,floptime[ms],normally open a, b)
         '63mHZj.xxx':(0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,500,0b00000000,0b00000000)}
 IO16i = {'62efV1.gox':{'a0b1':'V00WOH1SRA1DI01','a0b10':'V00WOH1SRA1DI02','a0b100':'V00WOH1SRA1DI03','a0b1000':'V00WOH1SRA1DI04','a0b10000':'V00WOH1SRA1DI05','a0b100000':'V00WOH1SRA1DI06'}}
 IO16o = {'V01ZIM1RUM1DO01':({'Value':0,'Commands':({'UID':'63mHZj.vYN','Pin':0b00000001,'Port':'B','Value':0},{'UID':'63mHZj.vYN','Pin':0b00000010,'Port':'B','Value':1})},
