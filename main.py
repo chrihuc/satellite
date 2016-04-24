@@ -7,7 +7,7 @@ import time
 from tf_class import tiFo
 import constants
 import sys
-
+import git
 
 PORT_NUMBER = 5005
 mySocket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
@@ -17,6 +17,15 @@ mySocket.listen(1)
 SIZE = 1024
 
 threadliste = []
+
+run = True
+
+def git_update():
+    global run
+    g = git.cmd.Git()
+    g.pull()
+    print "Update done, exiting"
+    run = False
 
 def send_heartbeat():
     while True:
@@ -41,7 +50,7 @@ tf = tiFo()
 #t.start()
 
 
-while True:
+while run:
     conn, addr = mySocket.accept()
     data = conn.recv(1024)
     if not data:
@@ -56,6 +65,8 @@ while True:
     result = False
     if isdict:
         if 'Device' in data_ev:
-           result = tf.set_device(data_ev)  
+           result = tf.set_device(data_ev) 
+        elif data_ev.get('Command')=='Update':
+            git_update()            
     conn.send(result)
     conn.close()           

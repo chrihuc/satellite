@@ -19,4 +19,5 @@ IO16o = {'V01ZIM1RUM1DO01':({'Value':0,'Commands':({'UID':'63mHZj.vYN','Pin':0b0
                             {'Value':1,'Commands':({'UID':'63mHZj.vYN','Pin':0b00001000,'Port':'B','Value':1})})                             
          }
 
-LEDs = {'V00...':{'UID':'UID','Start':0,'Ende':90}}
+LEDs = {'63mHZj.xxx':(2812,50)}
+LEDsOut = {'V00...':{'UID':'UID','Start':0,'Ende':90}}

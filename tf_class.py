@@ -68,12 +68,25 @@ class io16Dict:
                 #times[index] = 0
                 ios["times"] = times     
                 return timedelta
+
+class LEDStrips:
+    def __init__(self):
+        self.liste = []
+        
+    def addLED(self, LED,addr):
+        global liste
+        dicti = {}
+        dicti["LED"] = LED
+        dicti['addr'] = addr  
+        self.liste.append(dicti)        
         
 class tiFo:
     def __init__(self):
         self.led = None
         self.io = []
         self.io16list = io16Dict()
+        self.LEDs = []
+        #self.LEDList = LEDStrips()
         self.al = []
         self.moist = None
         # Create IP Connection
@@ -85,6 +98,7 @@ class tiFo:
                                      self.cb_connected)
         # Connect to brickd, will trigger cb_connected
         self.ipcon.connect(constants.ownIP, PORT) 
+        self.unknown = []
         #self.ipcon.enumerate()        
         
 
@@ -157,26 +171,26 @@ class tiFo:
             if cmd.get('Value') == value:
                 cmds = cmd.get('Commands')
                 print cmds
-        if type(cmds) in (list,tuple):
-            for cmd in cmds:
-                print cmd
-                if cmd.get('Value') == 0: #erst alle auf Null setzen
+                if type(cmds) in (list,tuple):
+                    for cmd in cmds:
+                        print cmd
+                        if cmd.get('Value') == 0: #erst alle auf Null setzen
+                            addr = cmd.get('UID') 
+                            for io in self.io16list.liste:
+                                if io.get('addr') == addr:
+                                    self.set_io16_sub(self,cmd,io)
+                    for cmd in cmds:                            
+                        if cmd.get('Value') == 1: #erst alle auf Null setzen
+                            addr = cmd.get('UID') 
+                            for io in self.io16list.liste:
+                                if io.get('addr') == addr:
+                                    self.set_io16_sub(self,cmd,io)    
+                else:
+                    cmd = cmds
                     addr = cmd.get('UID') 
                     for io in self.io16list.liste:
                         if io.get('addr') == addr:
                             self.set_io16_sub(self,cmd,io)
-            for cmd in cmds:                            
-                if cmd.get('Value') == 1: #erst alle auf Null setzen
-                    addr = cmd.get('UID') 
-                    for io in self.io16list.liste:
-                        if io.get('addr') == addr:
-                            self.set_io16_sub(self,cmd,io)    
-        else:
-            cmd = cmds
-            addr = cmd.get('UID') 
-            for io in self.io16list.liste:
-                if io.get('addr') == addr:
-                    self.set_io16_sub(self,cmd,io)
         return True                           
          
     def set_device(self, data_ev): 
@@ -188,13 +202,17 @@ class tiFo:
     def cb_enumerate(self, uid, connected_uid, position, hardware_version, 
                      firmware_version, device_identifier, enumeration_type):
         #global self.led
+        found = False
         if enumeration_type == IPConnection.ENUMERATION_TYPE_CONNECTED or \
            enumeration_type == IPConnection.ENUMERATION_TYPE_AVAILABLE:
             # Enumeration for LED
             if device_identifier == LEDStrip.DEVICE_IDENTIFIER:
-                self.led = LEDStrip(uid, self.ipcon)
-                self.led.set_chip_type(2812)
-                self.led.set_frame_duration(50)
+                self.LEDs.append(LEDStrip(uid, self.ipcon))
+                temp_uid = str(self.LEDs[-1].get_identity()[1]) +"."+ str(self.LEDs[-1].get_identity()[0])
+                if tifo_config.LEDs.get(temp_uid) <> None:
+                    self.led.set_chip_type(tifo_config.LEDs.get(temp_uid)[0])
+                    self.led.set_frame_duration(tifo_config.LEDs.get(temp_uid)[1])
+                    found  = True
                 #self.led.register_callback(self.led.CALLBACK_FRAME_RENDERED, 
                 #                lambda x: __cb_frame_rendered__(self.led, x))
                 #self.led.set_rgb_values(0, self.NUM_LEDS, self.r, self.g, self.b)
@@ -216,6 +234,7 @@ class tiFo:
                     #self.io[-1].set_port_monoflop('a', tifo_config.IO16.get(temp_uid)[4],0,tifo_config.IO16.get(temp_uid)[6])
                     #self.io[-1].set_port_monoflop('b', tifo_config.IO16.get(temp_uid)[5],0,tifo_config.IO16.get(temp_uid)[6])
                     self.io[-1].register_callback(self.io[-1].CALLBACK_INTERRUPT, partial( self.cb_interrupt, device = self.io[-1] ))
+                    found  = True
              
             if device_identifier == AmbientLight.DEVICE_IDENTIFIER:
                 self.al.append(AmbientLight(uid, self.ipcon))
@@ -228,11 +247,17 @@ class tiFo:
                 #self.al.register_callback(self.al.CALLBACK_ILLUMINANCE_REACHED, self.cb_ambLight)
                 args = self.al[-1]
                 self.al[-1].register_callback(self.al[-1].CALLBACK_ILLUMINANCE_REACHED, lambda event1, event2, event3, args=args: self.cb_ambLight(event1, event2, event3, args))
-                
-            if device_identifier == Moisture.DEVICE_IDENTIFIER:
-                self.moist = Moisture(uid, self.ipcon)
-                self.moist.set_moisture_callback_period(10000)
-                self.moist.register_callback(self.moist.CALLBACK_MOISTURE, self.cb_moisture)
+                temp_uid = str(self.al[-1].get_identity()[1]) +"."+ str(self.al[-1].get_identity()[0])
+                if tifo_config.inputs.get(temp_uid) <> None:
+                    found  = True
+#                
+#            if device_identifier == Moisture.DEVICE_IDENTIFIER:
+#                self.moist = Moisture(uid, self.ipcon)
+#                self.moist.set_moisture_callback_period(10000)
+#                self.moist.register_callback(self.moist.CALLBACK_MOISTURE, self.cb_moisture)
+            
+            if not found:
+                print device_identifier
 
         
     def cb_connected(self, connected_reason):
@@ -345,6 +370,7 @@ class dist_us:
     
 if __name__ == "__main__":
     #sb = dist_us()
+    data_ev = {}
     tf = tiFo()
     time.sleep(2)
     data_ev['Device'] = 'V01ZIM1RUM1DO01'
