@@ -210,8 +210,8 @@ class tiFo:
                 self.LEDs.append(LEDStrip(uid, self.ipcon))
                 temp_uid = str(self.LEDs[-1].get_identity()[1]) +"."+ str(self.LEDs[-1].get_identity()[0])
                 if tifo_config.LEDs.get(temp_uid) <> None:
-                    self.led.set_chip_type(tifo_config.LEDs.get(temp_uid)[0])
-                    self.led.set_frame_duration(tifo_config.LEDs.get(temp_uid)[1])
+                    self.LEDs[-1].set_chip_type(tifo_config.LEDs.get(temp_uid)[0])
+                    self.LEDs[-1].set_frame_duration(tifo_config.LEDs.get(temp_uid)[1])
                     found  = True
                 #self.led.register_callback(self.led.CALLBACK_FRAME_RENDERED, 
                 #                lambda x: __cb_frame_rendered__(self.led, x))
