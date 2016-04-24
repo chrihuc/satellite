@@ -67,7 +67,7 @@ class io16Dict:
                 timedelta = datetime.datetime.now() - times[index]
                 #times[index] = 0
                 ios["times"] = times     
-                return timedelta
+                return timedelta.total_seconds()
 
 class LEDStrips:
     def __init__(self):
@@ -140,7 +140,7 @@ class tiFo:
         else:
             dicti['Value'] = 0
             self.io16list.setTime(device,interrupt_mask, port)
-        print dicti
+        #print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
 
     def set_io16_sub(self,cmd,io):
