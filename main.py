@@ -34,8 +34,8 @@ def send_heartbeat():
                 #print t.name
                 sys.exit()        
         dicti = {}
-        dicti['value'] = str(1)
-        dicti['name'] = 'Hrtbt_' + constants.name
+        dicti['Value'] = str(1)
+        dicti['Name'] = 'Hrtbt_' + constants.name
         hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))  
         time.sleep(60)
 
