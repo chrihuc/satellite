@@ -120,8 +120,8 @@ class tiFo:
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
 
     def cb_interrupt(self, port, interrupt_mask, value_mask, device):
-        print('Interrupt on port: ' + port + str(bin(interrupt_mask)))
-        print('Value: ' + str(bin(value_mask)))
+        #print('Interrupt on port: ' + port + str(bin(interrupt_mask)))
+        #print('Value: ' + str(bin(value_mask)))
         temp_uid = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         name = tifo_config.IO16i.get(temp_uid).get(port + str(bin(interrupt_mask)))
         if port == 'a':
@@ -132,7 +132,7 @@ class tiFo:
         nc_pos = (nc_mask&interrupt_mask)/interrupt_mask
         dicti = {}
         dicti['Name'] = name
-        print name, value
+        #print name, value
         self.io16list.setValues(device,value_mask,port)
         #print self.io16list.getTimeDiff(device,interrupt_mask, port)
         if value == nc_pos:        
@@ -170,10 +170,10 @@ class tiFo:
         for cmd in cmd_lsts:
             if cmd.get('Value') == value:
                 cmds = cmd.get('Commands')
-                print cmds
+                #print cmds
                 if type(cmds) in (list,tuple):
                     for cmd in cmds:
-                        print cmd
+                        #print cmd
                         if cmd.get('Value') == 0: #erst alle auf Null setzen
                             addr = cmd.get('UID') 
                             for io in self.io16list.liste:
