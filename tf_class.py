@@ -114,8 +114,8 @@ class tiFo:
         device.set_illuminance_callback_threshold('o', thresDown, thresUp)
         dicti = {}
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
-        dicti['value'] = str(illuminance)
-        dicti['name'] = name
+        dicti['Value'] = str(illuminance)
+        dicti['Name'] = name
         #print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
 
@@ -131,14 +131,14 @@ class tiFo:
         value = (value_mask&interrupt_mask)/interrupt_mask
         nc_pos = (nc_mask&interrupt_mask)/interrupt_mask
         dicti = {}
-        dicti['name'] = name
+        dicti['Name'] = name
         print name, value
         self.io16list.setValues(device,value_mask,port)
         #print self.io16list.getTimeDiff(device,interrupt_mask, port)
         if value == nc_pos:        
-            dicti['value'] = self.io16list.getTimeDiff(device,interrupt_mask, port)
+            dicti['Value'] = self.io16list.getTimeDiff(device,interrupt_mask, port)
         else:
-            dicti['value'] = 0
+            dicti['Value'] = 0
             self.io16list.setTime(device,interrupt_mask, port)
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
 
