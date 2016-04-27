@@ -13,7 +13,7 @@ PORT_NUMBER = 5005
 mySocket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 hbtsocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
 mySocket.bind( ('', PORT_NUMBER) )
-mySocket.listen(1)
+mySocket.listen(5)
 SIZE = 1024
 
 threadliste = []
@@ -68,5 +68,5 @@ while run:
            result = tf.set_device(data_ev) 
         elif data_ev.get('Command')=='Update':
             git_update()            
-    conn.send(result)
+    conn.send(str(result))
     conn.close()           
