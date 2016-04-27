@@ -197,6 +197,8 @@ class tiFo:
     def set_device(self, data_ev): 
         if tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
             return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))
+        elif tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
+            return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))
         else:
             return False
 

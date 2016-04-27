@@ -5,8 +5,8 @@ Created on Sat Apr  2 08:11:53 2016
 @author: christoph
 """
 
-inputs = {'62efV1.m4d':'V01ZIM1RUM1HE01'}
-outputs = {'V01ZIM1RUM1DO01':'IO16o','V01ZIM1RUM1DO02':'IO16o','V01ZIM1RUM1DO03':'IO16o','V00...':'LEDs'}
+inputs = {'62efV1.m4d':'V00WOH1RUM1HE01'}
+outputs = {'V01ZIM1RUM1DO01':'IO16o','V01ZIM1RUM1DO02':'IO16o','V01ZIM1RUM1DO03':'IO16o','V00WOH1SRA1LI01':'LEDs'}
 
 IO16 = {'62efV1.gox':(0b00111111,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,500,0b00000000,0b00000000), #(inputa,inputb,outputa,outputb,monoflopa,monoflopb,floptime[ms],normally open a, b)
         '63mHZj.xxx':(0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,500,0b00000000,0b00000000)}
@@ -20,4 +20,4 @@ IO16o = {'V01ZIM1RUM1DO01':({'Value':0,'Commands':({'UID':'63mHZj.vYN','Pin':0b0
          }
 
 LEDs = {'62efV1.oUX':(2812,50)}
-LEDsOut = {'V00...':{'UID':'UID','Start':0,'Ende':90}}
+LEDsOut = {'V00WOH1SRA1LI01':{'UID':'62efV1.oUX','Start':0,'Ende':15}}
