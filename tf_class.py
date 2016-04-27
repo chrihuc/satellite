@@ -212,15 +212,15 @@ class tiFo:
         uid = LEDDict.get('UID')
         start = LEDDict.get('Start')
         ende = LEDDict.get('Ende')
-        red = [blau]*16
-        green = [rot]*16
-        blue = [gruen]*16   
+        red = [int(blau)]*16
+        green = [int(rot)]*16
+        blue = [int(gruen)]*16   
         for LED in self.LEDList.liste:
             if LED.get('addr') == uid:
                 if transitiontime == None:  
                     for birne in range(start,ende):
                         LED.get('LED').set_rgb_values(birne, 1, red, green, blue)
-
+        return True
          
     def set_device(self, data_ev): 
         if tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
