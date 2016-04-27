@@ -81,12 +81,17 @@ class LEDStrips:
         self.liste.append(dicti)        
         
 class tiFo:
+    
+    r = [0]*16
+    g = [0]*16
+    b = [0]*16
+    
     def __init__(self):
         self.led = None
         self.io = []
         self.io16list = io16Dict()
         self.LEDs = []
-        #self.LEDList = LEDStrips()
+        self.LEDList = LEDStrips()
         self.al = []
         self.moist = None
         # Create IP Connection
@@ -143,24 +148,32 @@ class tiFo:
         #print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
 
-    def set_io16_sub(self,cmd,io):
+    def set_io16_sub(self,cmd,io,value):
         port = cmd.get('Port') 
         if port  == 'A':
             flopmask = tifo_config.IO16.get(io.get('addr'))[4]
-            if flopmask & cmd.get('Pin') == 0:
-                normpos = tifo_config.IO16.get(io.get('addr'))[7]
-                io.get('IO').set_port_monoflop('a', cmd.get('Pin'),((~normpos)&0b11111111),tifo_config.IO16.get(io.get('addr'))[6])
+            if flopmask & cmd.get('Pin') > 0:
+                if value == 1:
+                    normpos = tifo_config.IO16.get(io.get('addr'))[7]
+                    io.get('IO').set_port_monoflop('a', cmd.get('Pin'),((~normpos)&0b11111111),tifo_config.IO16.get(io.get('addr'))[6])
             else:
-                mask = io.get('valueA') & ~ cmd.get('Pin')
+                if value == 1:
+                    mask = io.get('valueA') | cmd.get('Pin')
+                else:
+                    mask = io.get('valueA') & (0b11111111 & ~ cmd.get('Pin'))
                 self.io16list.setValues(io.get('IO'),mask,'a')
                 io.get('IO').set_port('a',mask)
         else:
             flopmask = tifo_config.IO16.get(io.get('addr'))[5]
-            if flopmask & cmd.get('Pin') == 0:
-                normpos = tifo_config.IO16.get(io.get('addr'))[8]
-                io.get('IO').set_port_monoflop('b', cmd.get('Pin'),((~normpos)&0b11111111),tifo_config.IO16.get(io.get('addr'))[6])            
+            if flopmask & cmd.get('Pin') > 0:
+                if value == 1:
+                    normpos = tifo_config.IO16.get(io.get('addr'))[8]
+                    io.get('IO').set_port_monoflop('b', cmd.get('Pin'),((~normpos)&0b11111111),tifo_config.IO16.get(io.get('addr'))[6])            
             else:
-                mask = io.get('valueB') & ~ cmd.get('Pin')
+                if value == 1:
+                    mask = io.get('valueB') | cmd.get('Pin')
+                else:
+                    mask = io.get('valueB') & (0b11111111 & ~ cmd.get('Pin'))
                 self.io16list.setValues(io.get('IO'),mask,'b')
                 io.get('IO').set_port('b',mask)       
 
@@ -179,26 +192,43 @@ class tiFo:
                             addr = cmd.get('UID') 
                             for io in self.io16list.liste:
                                 if io.get('addr') == addr:
-                                    self.set_io16_sub(self,cmd,io)
+                                    self.set_io16_sub(cmd,io,cmd.get('Value'))
                     for cmd in cmds:                            
                         if cmd.get('Value') == 1: #erst alle auf Null setzen
                             addr = cmd.get('UID') 
                             for io in self.io16list.liste:
                                 if io.get('addr') == addr:
-                                    self.set_io16_sub(self,cmd,io)    
+                                    self.set_io16_sub(cmd,io,cmd.get('Value'))    
                 else:
                     cmd = cmds
                     addr = cmd.get('UID') 
                     for io in self.io16list.liste:
                         if io.get('addr') == addr:
-                            self.set_io16_sub(self,cmd,io)
+                            self.set_io16_sub(cmd,io,cmd.get('Value'))
         return True                           
+
+    def set_LED(self, device, rot, gruen, blau, transitiontime):
+        LEDDict = tifo_config.LEDsOut.get(device)
+        uid = LEDDict.get('UID')
+        start = LEDDict.get('Start')
+        ende = LEDDict.get('Ende')
+        red = [blau]*16
+        green = [rot]*16
+        blue = [gruen]*16   
+        for LED in self.LEDList.liste:
+            if LED.get('addr') == uid:
+                if transitiontime == None:  
+                    for birne in range(start,ende):
+                        LED.get('LED').set_rgb_values(birne, 1, red, green, blue)
+
          
     def set_device(self, data_ev): 
         if tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
             return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
             return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))
+        elif tifo_config.outputs.get(data_ev.get('Device')) == 'LEDs':
+            return self.set_LED(data_ev.get('Device'),data_ev.get('red'),data_ev.get('green'),data_ev.get('blue'),data_ev.get('transitiontime'))            
         else:
             return False
 
@@ -212,6 +242,7 @@ class tiFo:
             if device_identifier == LEDStrip.DEVICE_IDENTIFIER:
                 self.LEDs.append(LEDStrip(uid, self.ipcon))
                 temp_uid = str(self.LEDs[-1].get_identity()[1]) +"."+ str(self.LEDs[-1].get_identity()[0])
+                self.LEDList.addLED(self.LEDs[-1],temp_uid)
                 if tifo_config.LEDs.get(temp_uid) <> None:
                     self.LEDs[-1].set_chip_type(tifo_config.LEDs.get(temp_uid)[0])
                     self.LEDs[-1].set_frame_duration(tifo_config.LEDs.get(temp_uid)[1])
@@ -377,30 +408,46 @@ if __name__ == "__main__":
     data_ev = {}
     tf = tiFo()
     time.sleep(2)
-    data_ev['Device'] = 'V01ZIM1RUM1DO01'
-    data_ev['value'] = 1
+    data_ev['Device'] = 'V00WOH1SRA1LI01'
+    data_ev['red'] = 255
+    data_ev['green'] = 0
+    data_ev['blue'] = 0    
     tf.set_device(data_ev) 
         
     time.sleep(2)
+    data_ev['Device'] = 'V00WOH1SRA1LI02'
+    data_ev['red'] = 0
+    data_ev['green'] = 255
+    data_ev['blue'] = 0    
+    tf.set_device(data_ev)
+
+    time.sleep(2)
+    data_ev['Device'] = 'V00WOH1SRA1LI03'
+    data_ev['red'] = 0
+    data_ev['green'] = 0
+    data_ev['blue'] = 255    
+    tf.set_device(data_ev)    
+        
+    time.sleep(2)
     data_ev['Device'] = 'V01ZIM1RUM1DO01'
-    data_ev['value'] = 0
+    data_ev['Value'] = 0
     tf.set_device(data_ev) 
         
     time.sleep(2)        
     data_ev['Device'] = 'V01ZIM1RUM1DO02'
-    data_ev['value'] = 1
+    data_ev['Value'] = 1
     tf.set_device(data_ev)   
 
     time.sleep(2)        
     data_ev['Device'] = 'V01ZIM1RUM1DO03'
-    data_ev['value'] = 1
+    data_ev['Value'] = 1
     tf.set_device(data_ev) 
     
     time.sleep(2)        
     data_ev['Device'] = 'V01ZIM1RUM1DO01'
-    data_ev['value'] = 1
+    data_ev['Value'] = 1
     tf.set_device(data_ev) 
-    raw_input('Press key to exit\n') # Use input() in Python 3   
+    #raw_input('Press key to exit\n') # Use input() in Python 3   
     #sb.set_one_color(rot = 255)
     #raw_input('Press key to exit\n')   
     #time.sleep(15)
