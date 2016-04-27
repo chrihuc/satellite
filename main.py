@@ -26,6 +26,7 @@ def git_update():
     g.pull()
     print "Update done, exiting"
     run = False
+    sys.exit() 
 
 def send_heartbeat():
     while True:
