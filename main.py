@@ -13,7 +13,7 @@ PORT_NUMBER = 5005
 mySocket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 hbtsocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
 mySocket.bind( ('', PORT_NUMBER) )
-mySocket.listen(6)
+mySocket.listen(128)
 SIZE = 1024
 
 threadliste = []
