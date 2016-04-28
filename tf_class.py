@@ -208,6 +208,12 @@ class tiFo:
         return True                           
 
     def set_LED(self, device, rot, gruen, blau, transitiontime):
+        if rot <= 0:
+            rot  = 0
+        if gruen <= 0:
+            gruen  = 0
+        if blau <= 0:
+            blau  = 0            
         LEDDict = tifo_config.LEDsOut.get(device)
         uid = LEDDict.get('UID')
         start = LEDDict.get('Start')
