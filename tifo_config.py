@@ -26,4 +26,4 @@ LEDsOut = {'V00WOH1SRA1LI01':{'UID':'62efV1.oUX','Start':0,'Ende':15},
            'V00WOH1SRA1LI02':{'UID':'62efV1.oUX','Start':15,'Ende':30},
            'V00WOH1SRA1LI03':{'UID':'62efV1.oUX','Start':30,'Ende':45}}
            
-DualRelay = {'V00WOH1SRA1LI11':({'Value':0,'UID':'63mHZj.wBh','relay':1,'state':False},{'Value':1,'UID':'63mHZj.wBh','relay':1,'state':True})}          
+DualRelay = {'V00WOH1SRA1LI11':({'Value':0,'UID':'62efV1.wBh','relay':1,'state':False},{'Value':1,'UID':'62efV1.wBh','relay':1,'state':True})}          
