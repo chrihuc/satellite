@@ -12,6 +12,7 @@ from tinkerforge.bricklet_ambient_light import AmbientLight
 from tinkerforge.bricklet_moisture import Moisture
 from tinkerforge.bricklet_voltage_current import BrickletVoltageCurrent
 from tinkerforge.bricklet_distance_us import BrickletDistanceUS
+from tinkerforge.bricklet_dual_relay import BrickletDualRelay
 from threading import Timer
 import time
 from math import log
@@ -93,6 +94,7 @@ class tiFo:
         self.LEDs = []
         self.LEDList = LEDStrips()
         self.al = []
+        self.drb = []
         self.moist = None
         # Create IP Connection
         self.ipcon = IPConnection() 
@@ -223,10 +225,25 @@ class tiFo:
         blue = [int(gruen)]*16   
         for LED in self.LEDList.liste:
             if LED.get('addr') == uid:
-                if transitiontime == None:  
+                if transitiontime == None or transitiontime <= 0:  
                     for birne in range(start,ende):
                         LED.get('LED').set_rgb_values(birne, 1, red, green, blue)
         return True
+         
+    def set_drb(self, device, value):
+        uid_cmds = tifo_config.DualRelay.get(device) 
+        for cmd in uid_cmds:
+            if cmd.get('Value') == value:
+                uid = cmd.get('UID')
+                state = cmd.get('state')
+                relaynr = cmd.get('relay')
+        for relay in self.drb:
+            temp_uid = str(relay.get_identity()[1]) +"."+ str(relay.get_identity()[0])
+            if temp_uid == uid:
+                relay.set_selected_state(relaynr, state)
+                return True
+        return False
+         
          
     def set_device(self, data_ev): 
         if tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
@@ -234,7 +251,9 @@ class tiFo:
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
             return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'LEDs':
-            return self.set_LED(data_ev.get('Device'),data_ev.get('red'),data_ev.get('green'),data_ev.get('blue'),data_ev.get('transitiontime'))            
+            return self.set_LED(data_ev.get('Device'),data_ev.get('red'),data_ev.get('green'),data_ev.get('blue'),data_ev.get('transitiontime'))      
+        elif tifo_config.outputs.get(data_ev.get('Device')) == 'DualRelay':
+            return self.set_drb(data_ev.get('Device'),data_ev.get('Value'))            
         else:
             return False
 
@@ -291,6 +310,9 @@ class tiFo:
                 temp_uid = str(self.al[-1].get_identity()[1]) +"."+ str(self.al[-1].get_identity()[0])
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True
+
+            if device_identifier == BrickletDualRelay.DEVICE_IDENTIFIER:
+                self.drb.append(BrickletDualRelay(uid, self.ipcon))
 #                
 #            if device_identifier == Moisture.DEVICE_IDENTIFIER:
 #                self.moist = Moisture(uid, self.ipcon)
@@ -414,45 +436,52 @@ if __name__ == "__main__":
     data_ev = {}
     tf = tiFo()
     time.sleep(2)
-    data_ev['Device'] = 'V00WOH1SRA1LI01'
-    data_ev['red'] = 255
-    data_ev['green'] = 0
-    data_ev['blue'] = 0    
-    tf.set_device(data_ev) 
-        
-    time.sleep(2)
-    data_ev['Device'] = 'V00WOH1SRA1LI02'
-    data_ev['red'] = 0
-    data_ev['green'] = 255
-    data_ev['blue'] = 0    
-    tf.set_device(data_ev)
-
-    time.sleep(2)
-    data_ev['Device'] = 'V00WOH1SRA1LI03'
-    data_ev['red'] = 0
-    data_ev['green'] = 0
-    data_ev['blue'] = 255    
+    data_ev['Device'] = 'V00WOH1SRA1LI11'
+    data_ev['Value'] = 1   
     tf.set_device(data_ev)    
-        
     time.sleep(2)
-    data_ev['Device'] = 'V01ZIM1RUM1DO01'
-    data_ev['Value'] = 0
-    tf.set_device(data_ev) 
-        
-    time.sleep(2)        
-    data_ev['Device'] = 'V01ZIM1RUM1DO02'
-    data_ev['Value'] = 1
-    tf.set_device(data_ev)   
-
-    time.sleep(2)        
-    data_ev['Device'] = 'V01ZIM1RUM1DO03'
-    data_ev['Value'] = 1
-    tf.set_device(data_ev) 
-    
-    time.sleep(2)        
-    data_ev['Device'] = 'V01ZIM1RUM1DO01'
-    data_ev['Value'] = 1
-    tf.set_device(data_ev) 
+    data_ev['Device'] = 'V00WOH1SRA1LI11'
+    data_ev['Value'] = 0   
+    tf.set_device(data_ev)     
+#    data_ev['Device'] = 'V00WOH1SRA1LI01'
+#    data_ev['red'] = 255
+#    data_ev['green'] = 0
+#    data_ev['blue'] = 0    
+#    tf.set_device(data_ev) 
+#        
+#    time.sleep(2)
+#    data_ev['Device'] = 'V00WOH1SRA1LI02'
+#    data_ev['red'] = 0
+#    data_ev['green'] = 255
+#    data_ev['blue'] = 0    
+#    tf.set_device(data_ev)
+#
+#    time.sleep(2)
+#    data_ev['Device'] = 'V00WOH1SRA1LI03'
+#    data_ev['red'] = 0
+#    data_ev['green'] = 0
+#    data_ev['blue'] = 255    
+#    tf.set_device(data_ev)    
+#        
+#    time.sleep(2)
+#    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+#    data_ev['Value'] = 0
+#    tf.set_device(data_ev) 
+#        
+#    time.sleep(2)        
+#    data_ev['Device'] = 'V01ZIM1RUM1DO02'
+#    data_ev['Value'] = 1
+#    tf.set_device(data_ev)   
+#
+#    time.sleep(2)        
+#    data_ev['Device'] = 'V01ZIM1RUM1DO03'
+#    data_ev['Value'] = 1
+#    tf.set_device(data_ev) 
+#    
+#    time.sleep(2)        
+#    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+#    data_ev['Value'] = 1
+#    tf.set_device(data_ev) 
     #raw_input('Press key to exit\n') # Use input() in Python 3   
     #sb.set_one_color(rot = 255)
     #raw_input('Press key to exit\n')   
