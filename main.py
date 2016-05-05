@@ -12,6 +12,7 @@ import git
 PORT_NUMBER = 5005
 mySocket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 hbtsocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
+mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 mySocket.bind( ('', PORT_NUMBER) )
 mySocket.listen(128)
 SIZE = 1024
