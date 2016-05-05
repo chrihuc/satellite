@@ -133,7 +133,7 @@ class tiFo:
         temp_uid = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         bit_list = [(1 << bit) for bit in range(7, -1, -1)]
         for wert in bit_list:
-            if interrupt_mask & wert == 1:
+            if interrupt_mask & wert > 0:
                 name = tifo_config.IO16i.get(temp_uid).get(port + str(bin(wert)))
                 if name <> None:
                     namelist.append(name)
