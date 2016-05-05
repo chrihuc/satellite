@@ -139,6 +139,8 @@ class tiFo:
         nc_pos = (nc_mask&interrupt_mask)/interrupt_mask
         dicti = {}
         dicti['Name'] = name
+        dicti['temp_uid'] = temp_uid
+        dicti['name'] = port + str(bin(interrupt_mask))
         #print name, value
         self.io16list.setValues(device,value_mask,port)
         #print self.io16list.getTimeDiff(device,interrupt_mask, port)
