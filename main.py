@@ -30,7 +30,7 @@ def git_update():
     sys.exit() 
 
 def send_heartbeat():
-    while True:
+    while run:
         for t in threadliste:
             if not t in threading.enumerate():
                 #print t.name
