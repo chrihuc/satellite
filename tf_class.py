@@ -234,7 +234,7 @@ class tiFo:
         uid_cmds = tifo_config.DualRelay.get(device) 
         uid = ''
         for cmd in uid_cmds:
-            if float(cmd.get('Value')) == value:
+            if (cmd.get('Value')) == float(value):
                 uid = cmd.get('UID')
                 state = cmd.get('state')
                 relaynr = cmd.get('relay')
