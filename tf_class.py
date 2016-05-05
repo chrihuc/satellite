@@ -129,8 +129,14 @@ class tiFo:
     def cb_interrupt(self, port, interrupt_mask, value_mask, device):
         #print('Interrupt on port: ' + port + str(bin(interrupt_mask)))
         #print('Value: ' + str(bin(value_mask)))
+        namelist = []
         temp_uid = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
-        name = tifo_config.IO16i.get(temp_uid).get(port + str(bin(interrupt_mask)))
+        bit_list = [(1 << bit) for bit in range(7, -1, -1)]
+        for wert in bit_list:
+            if interrupt_mask & wert == 1:
+                name = tifo_config.IO16i.get(temp_uid).get(port + str(bin(wert)))
+                if name <> None:
+                    namelist.append(name)
         if port == 'a':
             nc_mask = tifo_config.IO16.get(temp_uid)[7]
         else:
@@ -138,9 +144,9 @@ class tiFo:
         value = (value_mask&interrupt_mask)/interrupt_mask
         nc_pos = (nc_mask&interrupt_mask)/interrupt_mask
         dicti = {}
-        dicti['Name'] = name
-        dicti['temp_uid'] = temp_uid
-        dicti['name'] = port + str(bin(interrupt_mask))
+#        dicti['Name'] = name
+#        dicti['temp_uid'] = temp_uid
+#        dicti['name'] = port + str(bin(interrupt_mask))
         #print name, value
         self.io16list.setValues(device,value_mask,port)
         #print self.io16list.getTimeDiff(device,interrupt_mask, port)
@@ -150,7 +156,9 @@ class tiFo:
             dicti['Value'] = 0
             self.io16list.setTime(device,interrupt_mask, port)
         #print dicti
-        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
+        for name in namelist:
+            dicti['Name'] = name
+            mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
 
     def set_io16_sub(self,cmd,io,value):
         port = cmd.get('Port') 
