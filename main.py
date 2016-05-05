@@ -38,8 +38,11 @@ def send_heartbeat():
         dicti = {}
         dicti['Value'] = str(1)
         dicti['Name'] = 'Hrtbt_' + constants.name
-        hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))  
-        time.sleep(60)
+        hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))
+        for i in range(0,60):
+            if not run:
+                break
+            time.sleep(1)
 
 hb = threading.Thread(name="TiFo", target=send_heartbeat, args = [])
 threadliste.append(hb)
