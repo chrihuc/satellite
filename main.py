@@ -66,6 +66,8 @@ while run:
     result = False
     if isdict:
         if data_ev.get('Command')=='Update':
+            conn.send('True')
+            conn.close()             
             git_update()       
         elif 'Device' in data_ev:
            result = tf.set_device(data_ev)             
