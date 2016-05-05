@@ -233,7 +233,7 @@ class tiFo:
     def set_drb(self, device, value):
         uid_cmds = tifo_config.DualRelay.get(device) 
         for cmd in uid_cmds:
-            if cmd.get('Value') == value:
+            if float(cmd.get('Value')) == value:
                 uid = cmd.get('UID')
                 state = cmd.get('state')
                 relaynr = cmd.get('relay')
