@@ -125,6 +125,17 @@ class tiFo:
         dicti['Name'] = name
         #print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+        
+    def thread_ambLight(self, device):
+        illuminance = device.get_analog_value()
+        dicti = {}
+        name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
+        dicti['Value'] = str(illuminance)
+        dicti['Name'] = name
+        #print dicti
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+        thread_cb_amb = Timer(60, self.thread_ambLight, [device])
+        thread_cb_amb.start()        
 
     def cb_interrupt(self, port, interrupt_mask, value_mask, device):
         #print('Interrupt on port: ' + port + str(bin(interrupt_mask)))
@@ -317,8 +328,10 @@ class tiFo:
                 #self.al.register_callback(self.al.CALLBACK_ILLUMINANCE_REACHED, self.cb_ambLight)
                 args = self.al[-1]
                 #self.al[-1].register_callback(self.al[-1].CALLBACK_ILLUMINANCE_REACHED, lambda event1, event2, event3, args=args: self.cb_ambLight(event1, event2, event3, args))
-                self.al[-1].register_callback(self.al[-1].CALLBACK_ILLUMINANCE_REACHED, partial( self.cb_ambLight,  device=args))
+                #self.al[-1].register_callback(self.al[-1].CALLBACK_ILLUMINANCE_REACHED, partial( self.cb_ambLight,  device=args))
                 temp_uid = str(self.al[-1].get_identity()[1]) +"."+ str(self.al[-1].get_identity()[0])
+                thread_cb_amb = Timer(60, self.thread_ambLight, [self.al[-1]])
+                thread_cb_amb.start()                 
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True
 

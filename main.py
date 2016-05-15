@@ -3,10 +3,10 @@
 import threading
 import socket
 import time
-#import urllib2, os
+
 from tf_class import tiFo
 import constants
-import sys
+import sys, os
 import git
 
 PORT_NUMBER = 5005
@@ -20,6 +20,10 @@ SIZE = 1024
 threadliste = []
 
 run = True
+
+os.system("sudo service brickd stop")
+os.system("sudo service brickd start")
+time.sleep(2)
 
 def git_update():
     global run
