@@ -12,6 +12,7 @@ import git
 PORT_NUMBER = 5005
 mySocket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 hbtsocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
+mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 mySocket.bind( ('', PORT_NUMBER) )
 mySocket.listen(128)
 SIZE = 1024
@@ -29,7 +30,7 @@ def git_update():
     sys.exit() 
 
 def send_heartbeat():
-    while True:
+    while run:
         for t in threadliste:
             if not t in threading.enumerate():
                 #print t.name
@@ -37,8 +38,11 @@ def send_heartbeat():
         dicti = {}
         dicti['Value'] = str(1)
         dicti['Name'] = 'Hrtbt_' + constants.name
-        hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))  
-        time.sleep(60)
+        hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))
+        for i in range(0,60):
+            if not run:
+                break
+            time.sleep(1)
 
 hb = threading.Thread(name="TiFo", target=send_heartbeat, args = [])
 threadliste.append(hb)
@@ -65,9 +69,11 @@ while run:
         isdict = False 
     result = False
     if isdict:
-        if 'Device' in data_ev:
-           result = tf.set_device(data_ev) 
-        elif data_ev.get('Command')=='Update':
-            git_update()            
+        if data_ev.get('Command')=='Update':
+            conn.send('True')
+            conn.close()             
+            git_update()       
+        elif 'Device' in data_ev:
+           result = tf.set_device(data_ev)             
     conn.send(str(result))
     conn.close()           
