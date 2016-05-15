@@ -435,14 +435,14 @@ if __name__ == "__main__":
     #sb = dist_us()
     data_ev = {}
     tf = tiFo()
-    time.sleep(2)
-    data_ev['Device'] = 'V00WOH1SRA1LI11'
-    data_ev['Value'] = 1   
-    tf.set_device(data_ev)    
-    time.sleep(2)
-    data_ev['Device'] = 'V00WOH1SRA1LI11'
-    data_ev['Value'] = 0   
-    tf.set_device(data_ev)     
+#    time.sleep(2)
+#    data_ev['Device'] = 'V00WOH1SRA1LI11'
+#    data_ev['Value'] = 1   
+#    tf.set_device(data_ev)    
+#    time.sleep(2)
+#    data_ev['Device'] = 'V00WOH1SRA1LI11'
+#    data_ev['Value'] = 0   
+#    tf.set_device(data_ev)     
 #    data_ev['Device'] = 'V00WOH1SRA1LI01'
 #    data_ev['red'] = 255
 #    data_ev['green'] = 0
@@ -462,26 +462,26 @@ if __name__ == "__main__":
 #    data_ev['green'] = 0
 #    data_ev['blue'] = 255    
 #    tf.set_device(data_ev)    
-#        
-#    time.sleep(2)
-#    data_ev['Device'] = 'V01ZIM1RUM1DO01'
-#    data_ev['Value'] = 0
-#    tf.set_device(data_ev) 
-#        
-#    time.sleep(2)        
-#    data_ev['Device'] = 'V01ZIM1RUM1DO02'
-#    data_ev['Value'] = 1
-#    tf.set_device(data_ev)   
-#
-#    time.sleep(2)        
-#    data_ev['Device'] = 'V01ZIM1RUM1DO03'
-#    data_ev['Value'] = 1
-#    tf.set_device(data_ev) 
-#    
-#    time.sleep(2)        
-#    data_ev['Device'] = 'V01ZIM1RUM1DO01'
-#    data_ev['Value'] = 1
-#    tf.set_device(data_ev) 
+        
+    time.sleep(2)
+    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+    data_ev['Value'] = 0
+    tf.set_device(data_ev) 
+        
+    time.sleep(2)        
+    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+    data_ev['Value'] = 1
+    tf.set_device(data_ev)   
+
+    time.sleep(2)        
+    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+    data_ev['Value'] = 1
+    tf.set_device(data_ev) 
+    
+    time.sleep(2)        
+    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+    data_ev['Value'] = 0
+    tf.set_device(data_ev) 
     #raw_input('Press key to exit\n') # Use input() in Python 3   
     #sb.set_one_color(rot = 255)
     #raw_input('Press key to exit\n')   
