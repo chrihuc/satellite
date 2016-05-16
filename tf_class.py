@@ -125,6 +125,17 @@ class tiFo:
         dicti['Name'] = name
         #print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+        
+    def thread_ambLight(self, device):
+        illuminance = device.get_analog_value()
+        dicti = {}
+        name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
+        dicti['Value'] = str(illuminance)
+        dicti['Name'] = name
+        #print dicti
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+        thread_cb_amb = Timer(60, self.thread_ambLight, [device])
+        thread_cb_amb.start()        
 
     def cb_interrupt(self, port, interrupt_mask, value_mask, device):
         #print('Interrupt on port: ' + port + str(bin(interrupt_mask)))
@@ -179,13 +190,19 @@ class tiFo:
             flopmask = tifo_config.IO16.get(io.get('addr'))[5]
             if flopmask & cmd.get('Pin') > 0:
                 if value == 1:
-                    normpos = tifo_config.IO16.get(io.get('addr'))[8]
-                    io.get('IO').set_port_monoflop('b', cmd.get('Pin'),((~normpos)&0b11111111),tifo_config.IO16.get(io.get('addr'))[6])            
+                    #working but gets overwritten but other commands
+#                    normpos = tifo_config.IO16.get(io.get('addr'))[8]
+#                    io.get('IO').set_port_monoflop('b', cmd.get('Pin'),((~normpos)&0b11111111),tifo_config.IO16.get(io.get('addr'))[6]) 
+                    mask = io.get('IO').get_port('b') | cmd.get('Pin')
+                    io.get('IO').set_port('b',mask)
+                    time.sleep(float(tifo_config.IO16.get(io.get('addr'))[6])/1000)
+                    mask = io.get('IO').get_port('b') & (0b11111111 & ~ cmd.get('Pin'))
+                    io.get('IO').set_port('b',mask)   
             else:
                 if value == 1:
-                    mask = io.get('valueB') | cmd.get('Pin')
+                    mask = io.get('IO').get_port('b') | cmd.get('Pin')
                 else:
-                    mask = io.get('valueB') & (0b11111111 & ~ cmd.get('Pin'))
+                    mask = io.get('IO').get_port('b') & (0b11111111 & ~ cmd.get('Pin'))
                 self.io16list.setValues(io.get('IO'),mask,'b')
                 io.get('IO').set_port('b',mask)       
 
@@ -320,6 +337,8 @@ class tiFo:
                 #self.al[-1].register_callback(self.al[-1].CALLBACK_ILLUMINANCE_REACHED, lambda event1, event2, event3, args=args: self.cb_ambLight(event1, event2, event3, args))
                 self.al[-1].register_callback(self.al[-1].CALLBACK_ILLUMINANCE_REACHED, partial( self.cb_ambLight,  device=args))
                 temp_uid = str(self.al[-1].get_identity()[1]) +"."+ str(self.al[-1].get_identity()[0])
+                thread_cb_amb = Timer(60, self.thread_ambLight, [self.al[-1]])
+                #thread_cb_amb.start()                 
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True
 
@@ -479,11 +498,20 @@ if __name__ == "__main__":
     data_ev['Device'] = 'V01ZIM1RUM1DO01'
     data_ev['Value'] = 0
     tf.set_device(data_ev) 
+    data_ev['Device'] = 'V01ZIM1RUM1DO02'
+    data_ev['Value'] = 1
+    tf.set_device(data_ev)    
         
     time.sleep(2)        
     data_ev['Device'] = 'V01ZIM1RUM1DO01'
     data_ev['Value'] = 1
     tf.set_device(data_ev)   
+    data_ev['Device'] = 'V01ZIM1RUM1DO02'
+    data_ev['Value'] = 0
+    tf.set_device(data_ev) 
+    data_ev['Device'] = 'V01ZIM1RUM1DO03'
+    data_ev['Value'] = 1
+    tf.set_device(data_ev) 
 
     time.sleep(2)        
     data_ev['Device'] = 'V01ZIM1RUM1DO01'
@@ -493,6 +521,12 @@ if __name__ == "__main__":
     time.sleep(2)        
     data_ev['Device'] = 'V01ZIM1RUM1DO01'
     data_ev['Value'] = 0
+    tf.set_device(data_ev) 
+    data_ev['Device'] = 'V01ZIM1RUM1DO02'
+    data_ev['Value'] = 1
+    tf.set_device(data_ev) 
+    data_ev['Device'] = 'V01ZIM1RUM1DO03'
+    data_ev['Value'] = 0    
     tf.set_device(data_ev) 
     #raw_input('Press key to exit\n') # Use input() in Python 3   
     #sb.set_one_color(rot = 255)
