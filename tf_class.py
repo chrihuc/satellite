@@ -137,11 +137,11 @@ class tiFo:
         thread_cb_amb = Timer(60, self.thread_ambLight, [device])
         thread_cb_amb.start()        
 
-    def cb_interrupt(self, port, interrupt_mask, value_mask, device):
+    def cb_interrupt(self, port, interrupt_mask, value_mask, device, uid):
         #print('Interrupt on port: ' + port + str(bin(interrupt_mask)))
         #print('Value: ' + str(bin(value_mask)))
         namelist = []
-        temp_uid = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
+        temp_uid = uid #str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         bit_list = [(1 << bit) for bit in range(7, -1, -1)]
         for wert in bit_list:
             if interrupt_mask & wert > 0:
@@ -321,7 +321,7 @@ class tiFo:
                     self.io[-1].set_port_configuration('b', tifo_config.IO16.get(temp_uid)[3],'o',False)
                     #self.io[-1].set_port_monoflop('a', tifo_config.IO16.get(temp_uid)[4],0,tifo_config.IO16.get(temp_uid)[6])
                     #self.io[-1].set_port_monoflop('b', tifo_config.IO16.get(temp_uid)[5],0,tifo_config.IO16.get(temp_uid)[6])
-                    self.io[-1].register_callback(self.io[-1].CALLBACK_INTERRUPT, partial( self.cb_interrupt, device = self.io[-1] ))
+                    self.io[-1].register_callback(self.io[-1].CALLBACK_INTERRUPT, partial( self.cb_interrupt, device = self.io[-1], uid = temp_uid ))
                     found  = True
              
             if device_identifier == AmbientLight.DEVICE_IDENTIFIER:
