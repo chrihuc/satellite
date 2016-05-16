@@ -5,6 +5,8 @@ Created on Sat Apr  2 08:11:53 2016
 @author: christoph
 """
 #TV 6De9SU
+#Sideboard 62efV1
+
 inputs = {'6De9SU.m4d':'V00WOH1RUM1HE01'}
 outputs = {'V01ZIM1RUM1DO01':'IO16o','V01ZIM1RUM1DO02':'IO16o','V01ZIM1RUM1DO03':'IO16o',
            'V00WOH1SRA1LI01':'LEDs','V00WOH1SRA1LI02':'LEDs','V00WOH1SRA1LI03':'LEDs',
