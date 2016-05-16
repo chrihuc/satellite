@@ -279,6 +279,7 @@ class tiFo:
                 self.LEDs.append(LEDStrip(uid, self.ipcon))
                 temp_uid = str(self.LEDs[-1].get_identity()[1]) +"."+ str(self.LEDs[-1].get_identity()[0])
                 self.LEDList.addLED(self.LEDs[-1],temp_uid)
+                self.LEDs[-1].set_frame_duration(200)
                 if tifo_config.LEDs.get(temp_uid) <> None:
                     self.LEDs[-1].set_chip_type(tifo_config.LEDs.get(temp_uid)[0])
                     self.LEDs[-1].set_frame_duration(tifo_config.LEDs.get(temp_uid)[1])
