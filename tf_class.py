@@ -13,6 +13,7 @@ from tinkerforge.bricklet_moisture import Moisture
 from tinkerforge.bricklet_voltage_current import BrickletVoltageCurrent
 from tinkerforge.bricklet_distance_us import BrickletDistanceUS
 from tinkerforge.bricklet_dual_relay import BrickletDualRelay
+from tinkerforge.brick_master import BrickMaster
 from threading import Timer
 import time
 from math import log
@@ -95,6 +96,7 @@ class tiFo:
         self.LEDList = LEDStrips()
         self.al = []
         self.drb = []
+        self.master = []
         self.moist = None
         # Create IP Connection
         self.ipcon = IPConnection() 
@@ -107,7 +109,12 @@ class tiFo:
         self.ipcon.connect(constants.ownIP, PORT) 
         self.unknown = []
         #self.ipcon.enumerate()        
-        
+
+    def thread_RSerror(self):
+        for mastr in self.master:    
+            print mastr.get_rs485_error_log()
+        thread_rs_error = Timer(60, self.thread_RSerror, [])
+        thread_rs_error.start()         
 
     def cb_ambLight(self, illuminance,device):
         thresUp = illuminance * 4/3
@@ -357,6 +364,11 @@ class tiFo:
 #                self.moist = Moisture(uid, self.ipcon)
 #                self.moist.set_moisture_callback_period(10000)
 #                self.moist.register_callback(self.moist.CALLBACK_MOISTURE, self.cb_moisture)
+            
+            if device_identifier == BrickMaster.DEVICE_IDENTIFIER:   
+                self.master.append(BrickMaster(uid, self.ipcon))
+                thread_rs_error = Timer(60, self.thread_RSerror, [])
+                thread_rs_error.start()                  
             
             if not found:
                 print connected_uid, uid, device_identifier
