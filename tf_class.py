@@ -368,7 +368,7 @@ class tiFo:
             if device_identifier == BrickMaster.DEVICE_IDENTIFIER:   
                 self.master.append(BrickMaster(uid, self.ipcon))
                 thread_rs_error = Timer(60, self.thread_RSerror, [])
-                thread_rs_error.start()                  
+                #thread_rs_error.start()                  
             
             if not found:
                 print connected_uid, uid, device_identifier
