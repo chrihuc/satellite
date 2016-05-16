@@ -252,9 +252,17 @@ class tiFo:
         blue = [int(gruen)]*16   
         for LED in self.LEDList.liste:
             if LED.get('addr') == uid:
-                if transitiontime == None or transitiontime <= 0:  
-                    for birne in range(start,ende):
-                        LED.get('LED').set_rgb_values(birne, 1, red, green, blue)
+                if transitiontime == None or transitiontime <= 0:
+                    laenge = (ende-start)
+                    while (laenge) > 16:
+                        laenge = 16
+                        LED.get('LED').set_rgb_values(start, laenge, red, green, blue)
+                        start += laenge
+                        laenge = (ende-start)
+                    else:
+                        LED.get('LED').set_rgb_values(start, laenge, red, green, blue)
+#                    for birne in range(start,ende):
+#                        LED.get('LED').set_rgb_values(birne, 1, red, green, blue)
         return True
          
     def set_drb(self, device, value):
