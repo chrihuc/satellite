@@ -14,6 +14,7 @@ from tinkerforge.bricklet_voltage_current import BrickletVoltageCurrent
 from tinkerforge.bricklet_distance_us import BrickletDistanceUS
 from tinkerforge.bricklet_dual_relay import BrickletDualRelay
 from tinkerforge.bricklet_co2 import BrickletCO2
+from tinkerforge.brick_master import BrickMaster
 from threading import Timer
 import time
 from math import log
@@ -96,6 +97,7 @@ class tiFo:
         self.LEDList = LEDStrips()
         self.al = []
         self.drb = []
+        self.master = []
         self.moist = None
         # Create IP Connection
         self.ipcon = IPConnection() 
@@ -108,7 +110,12 @@ class tiFo:
         self.ipcon.connect(constants.ownIP, PORT) 
         self.unknown = []
         #self.ipcon.enumerate()        
-        
+
+    def thread_RSerror(self):
+        for mastr in self.master:    
+            print mastr.get_rs485_error_log()
+        thread_rs_error = Timer(60, self.thread_RSerror, [])
+        thread_rs_error.start()         
 
     def cb_ambLight(self, illuminance,device):
         thresUp = illuminance * 4/3
@@ -149,11 +156,12 @@ class tiFo:
         thread_cb_amb = Timer(60, self.thread_CO2, [device])
         thread_cb_amb.start()
 
-    def cb_interrupt(self, port, interrupt_mask, value_mask, device):
+
+    def cb_interrupt(self, port, interrupt_mask, value_mask, device, uid):
         #print('Interrupt on port: ' + port + str(bin(interrupt_mask)))
         #print('Value: ' + str(bin(value_mask)))
         namelist = []
-        temp_uid = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
+        temp_uid = uid #str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         bit_list = [(1 << bit) for bit in range(7, -1, -1)]
         for wert in bit_list:
             if interrupt_mask & wert > 0:
@@ -264,9 +272,17 @@ class tiFo:
         blue = [int(gruen)]*16   
         for LED in self.LEDList.liste:
             if LED.get('addr') == uid:
-                if transitiontime == None or transitiontime <= 0:  
-                    for birne in range(start,ende):
-                        LED.get('LED').set_rgb_values(birne, 1, red, green, blue)
+                if transitiontime == None or transitiontime <= 0:
+                    laenge = (ende-start)
+                    while (laenge) > 16:
+                        laenge = 16
+                        LED.get('LED').set_rgb_values(start, laenge, red, green, blue)
+                        start += laenge
+                        laenge = (ende-start)
+                    else:
+                        LED.get('LED').set_rgb_values(start, laenge, red, green, blue)
+#                    for birne in range(start,ende):
+#                        LED.get('LED').set_rgb_values(birne, 1, red, green, blue)
         return True
          
     def set_drb(self, device, value):
@@ -308,6 +324,7 @@ class tiFo:
                 self.LEDs.append(LEDStrip(uid, self.ipcon))
                 temp_uid = str(self.LEDs[-1].get_identity()[1]) +"."+ str(self.LEDs[-1].get_identity()[0])
                 self.LEDList.addLED(self.LEDs[-1],temp_uid)
+                self.LEDs[-1].set_frame_duration(200)
                 if tifo_config.LEDs.get(temp_uid) <> None:
                     self.LEDs[-1].set_chip_type(tifo_config.LEDs.get(temp_uid)[0])
                     self.LEDs[-1].set_frame_duration(tifo_config.LEDs.get(temp_uid)[1])
@@ -332,7 +349,7 @@ class tiFo:
                     self.io[-1].set_port_configuration('b', tifo_config.IO16.get(temp_uid)[3],'o',False)
                     #self.io[-1].set_port_monoflop('a', tifo_config.IO16.get(temp_uid)[4],0,tifo_config.IO16.get(temp_uid)[6])
                     #self.io[-1].set_port_monoflop('b', tifo_config.IO16.get(temp_uid)[5],0,tifo_config.IO16.get(temp_uid)[6])
-                    self.io[-1].register_callback(self.io[-1].CALLBACK_INTERRUPT, partial( self.cb_interrupt, device = self.io[-1] ))
+                    self.io[-1].register_callback(self.io[-1].CALLBACK_INTERRUPT, partial( self.cb_interrupt, device = self.io[-1], uid = temp_uid ))
                     found  = True
              
             if device_identifier == AmbientLight.DEVICE_IDENTIFIER:
@@ -365,6 +382,11 @@ class tiFo:
 #                self.moist = Moisture(uid, self.ipcon)
 #                self.moist.set_moisture_callback_period(10000)
 #                self.moist.register_callback(self.moist.CALLBACK_MOISTURE, self.cb_moisture)
+            
+            if device_identifier == BrickMaster.DEVICE_IDENTIFIER:   
+                self.master.append(BrickMaster(uid, self.ipcon))
+                thread_rs_error = Timer(60, self.thread_RSerror, [])
+                #thread_rs_error.start()                  
             
             if not found:
                 print connected_uid, uid, device_identifier
