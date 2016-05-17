@@ -147,14 +147,15 @@ class tiFo:
 
     def thread_CO2(self, device):
         value = device.get_co2_concentration()
+        print value
         dicti = {}
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
         dicti['Value'] = str(value)
         dicti['Name'] = name
-        #print dicti
+        print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
-        thread_cb_amb = Timer(60, self.thread_CO2, [device])
-        thread_cb_amb.start()
+        thread_co2_ = Timer(60, self.thread_CO2, [device])
+        thread_co2_.start()
 
 
     def cb_interrupt(self, port, interrupt_mask, value_mask, device, uid):
@@ -370,9 +371,9 @@ class tiFo:
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True
 
-            if device_identifier == BrickletDualRelay.DEVICE_IDENTIFIER:
+            if device_identifier == BrickletCO2.DEVICE_IDENTIFIER:
                 #BrickletDualRelay(uid, self.ipcon)
-                thread_co2_ = Timer(5, self.thread_CO2, [BrickletDualRelay(uid, self.ipcon)])
+                thread_co2_ = Timer(5, self.thread_CO2, [BrickletCO2(uid, self.ipcon)])
                 thread_co2_.start() 
 
             if device_identifier == BrickletDualRelay.DEVICE_IDENTIFIER:
