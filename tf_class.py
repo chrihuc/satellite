@@ -13,6 +13,7 @@ from tinkerforge.bricklet_moisture import Moisture
 from tinkerforge.bricklet_voltage_current import BrickletVoltageCurrent
 from tinkerforge.bricklet_distance_us import BrickletDistanceUS
 from tinkerforge.bricklet_dual_relay import BrickletDualRelay
+from tinkerforge.bricklet_co2 import BrickletCO2
 from threading import Timer
 import time
 from math import log
@@ -136,6 +137,17 @@ class tiFo:
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         thread_cb_amb = Timer(60, self.thread_ambLight, [device])
         thread_cb_amb.start()        
+
+    def thread_CO2(self, device):
+        value = device.get_co2_concentration()
+        dicti = {}
+        name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
+        dicti['Value'] = str(value)
+        dicti['Name'] = name
+        #print dicti
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+        thread_cb_amb = Timer(60, self.thread_CO2, [device])
+        thread_cb_amb.start()
 
     def cb_interrupt(self, port, interrupt_mask, value_mask, device):
         #print('Interrupt on port: ' + port + str(bin(interrupt_mask)))
@@ -340,6 +352,11 @@ class tiFo:
                 #thread_cb_amb.start()                 
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True
+
+            if device_identifier == BrickletDualRelay.DEVICE_IDENTIFIER:
+                #BrickletDualRelay(uid, self.ipcon)
+                thread_co2_ = Timer(5, self.thread_CO2, [BrickletDualRelay(uid, self.ipcon)])
+                thread_co2_.start() 
 
             if device_identifier == BrickletDualRelay.DEVICE_IDENTIFIER:
                 self.drb.append(BrickletDualRelay(uid, self.ipcon))
