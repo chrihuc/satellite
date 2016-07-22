@@ -9,7 +9,9 @@ Created on Sat Apr  2 08:11:53 2016
 #spare 63mHZj
 
 inputs = {'6De9SU':'TV','62efV1':'Sideboard','63mHZj':'spare',
-            '6De9SU.m4d':'V00WOH1RUM1HE01','6De9SU.xsR':'V00WOH1RUM1CO01','63mHZj.sFC':'V00WOH1RUM1BW01'}
+            '6De9SU.m4d':'V00WOH1RUM1HE01','6De9SU.xsR':'V00WOH1RUM1CO01',
+            '63mHZj.sFC':'V00WOH1RUM1MD01',
+            '63mHZj.voh':'V00WOH1RUM1SI01','63mHZj.woZ':'V00WOH1RUM1TE11'}
 outputs = {'V01ZIM1RUM1DO01':'IO16o','V01ZIM1RUM1DO02':'IO16o','V01ZIM1RUM1DO03':'IO16o',
            'V00WOH1SRA1LI01':'LEDs','V00WOH1SRA1LI02':'LEDs','V00WOH1SRA1LI03':'LEDs',
            'V00WOH1SRA1LI11':'DualRelay'}
@@ -31,3 +33,6 @@ LEDsOut = {'V00WOH1SRA1LI01':{'UID':'62efV1.oUX','Start':0,'Ende':15},
            'V00WOH1SRA1LI03':{'UID':'62efV1.oUX','Start':30,'Ende':45}}
            
 DualRelay = {'V00WOH1SRA1LI11':({'Value':0,'UID':'62efV1.wBh','relay':1,'state':False},{'Value':1,'UID':'62efV1.wBh','relay':1,'state':True})}          
+
+
+SoundInt = {'63mHZj.voh':[1000,'>',200,0]}#debounce, option, min, max

@@ -15,6 +15,8 @@ from tinkerforge.bricklet_distance_us import BrickletDistanceUS
 from tinkerforge.bricklet_dual_relay import BrickletDualRelay
 from tinkerforge.bricklet_co2 import BrickletCO2
 from tinkerforge.bricklet_motion_detector import BrickletMotionDetector
+from tinkerforge.bricklet_sound_intensity import BrickletSoundIntensity
+from tinkerforge.bricklet_ptc import BrickletPTC
 from tinkerforge.brick_master import BrickMaster
 from threading import Timer
 import time
@@ -100,6 +102,9 @@ class tiFo:
         self.drb = []
         self.master = []
         self.md = []
+        self.si = []
+        self.ptc = []
+        self.co2 = []
         self.moist = None
         # Create IP Connection
         self.ipcon = IPConnection() 
@@ -149,16 +154,23 @@ class tiFo:
 
     def thread_CO2(self, device):
         value = device.get_co2_concentration()
-        print value
         dicti = {}
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
         dicti['Value'] = str(value)
         dicti['Name'] = name
-        print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         thread_co2_ = Timer(60, self.thread_CO2, [device])
         thread_co2_.start()
 
+    def thread_pt(self, device):
+        value = device.get_temperature()
+        dicti = {}
+        name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
+        dicti['Value'] = str(float(value)/100)
+        dicti['Name'] = name
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+        thread_pt_ = Timer(60, self.thread_pt, [device])
+        thread_pt_.start()
 
     def cb_interrupt(self, port, interrupt_mask, value_mask, device, uid):
         #print('Interrupt on port: ' + port + str(bin(interrupt_mask)))
@@ -196,11 +208,15 @@ class tiFo:
 
     def cb_md(self, device, uid):
         dicti = {'Name':tifo_config.inputs.get(uid),'Value':1}
-        print dicti
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         
     def cb_md_end(self, device, uid):
         dicti = {'Name':tifo_config.inputs.get(uid),'Value':0}
-        print dicti       
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))      
+
+    def cb_si(self,value, device, uid):
+        dicti = {'Name':tifo_config.inputs.get(uid),'Value':value}
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort)) 
 
     def set_io16_sub(self,cmd,io,value):
         port = cmd.get('Port') 
@@ -382,9 +398,12 @@ class tiFo:
                     found  = True
 
             if device_identifier == BrickletCO2.DEVICE_IDENTIFIER:
-                #BrickletDualRelay(uid, self.ipcon)
-                thread_co2_ = Timer(5, self.thread_CO2, [BrickletCO2(uid, self.ipcon)])
-                thread_co2_.start() 
+                self.co2.append(BrickletCO2(uid, self.ipcon))
+                temp_uid = str(self.co2[-1].get_identity()[1]) +"."+ str(self.co2[-1].get_identity()[0])
+                if tifo_config.inputs.get(temp_uid) <> None:
+                    found  = True  
+                    thread_co2_ = Timer(5, self.thread_CO2, [self.co2[-1]])
+                    thread_co2_.start() 
 
             if device_identifier == BrickletDualRelay.DEVICE_IDENTIFIER:
                 self.drb.append(BrickletDualRelay(uid, self.ipcon))
@@ -401,6 +420,23 @@ class tiFo:
                 self.md[-1].register_callback(self.md[-1].CALLBACK_DETECTION_CYCLE_ENDED, partial( self.cb_md_end, device = self.md[-1], uid = temp_uid ))
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True                
+            
+            if device_identifier == BrickletSoundIntensity.DEVICE_IDENTIFIER:   
+                self.si.append(BrickletSoundIntensity(uid, self.ipcon))
+                temp_uid = str(self.si[-1].get_identity()[1]) +"."+ str(self.si[-1].get_identity()[0])
+                if tifo_config.inputs.get(temp_uid) <> None:
+                    found  = True             
+                    self.si[-1].set_debounce_period(tifo_config.SoundInt.get(temp_uid)[0])                
+                    self.si[-1].register_callback(self.si[-1].CALLBACK_INTENSITY_REACHED, partial( self.cb_si, device = self.si[-1], uid = temp_uid ))  
+                    self.si[-1].set_intensity_callback_threshold(tifo_config.SoundInt.get(temp_uid)[1], tifo_config.SoundInt.get(temp_uid)[2], tifo_config.SoundInt.get(temp_uid)[3])                    
+            
+            if device_identifier == BrickletPTC.DEVICE_IDENTIFIER:
+                self.ptc.append(BrickletPTC(uid, self.ipcon))
+                temp_uid = str(self.ptc[-1].get_identity()[1]) +"."+ str(self.ptc[-1].get_identity()[0])
+                if tifo_config.inputs.get(temp_uid) <> None:
+                    found  = True  
+                    thread_pt_ = Timer(5, self.thread_pt, [self.ptc[-1]])
+                    thread_pt_.start()             
             
             if device_identifier == BrickMaster.DEVICE_IDENTIFIER:   
                 self.master.append(BrickMaster(uid, self.ipcon))
