@@ -8,7 +8,8 @@ Created on Sat Apr  2 08:11:53 2016
 #Sideboard 62efV1
 #spare 63mHZj
 
-inputs = {'6De9SU.m4d':'V00WOH1RUM1HE01','6De9SU.xsR':'V00WOH1RUM1CO01'}
+inputs = {'6De9SU':'TV','62efV1':'Sideboard','63mHZj':'spare',
+            '6De9SU.m4d':'V00WOH1RUM1HE01','6De9SU.xsR':'V00WOH1RUM1CO01','63mHZj.sFC':'V00WOH1RUM1BW01'}
 outputs = {'V01ZIM1RUM1DO01':'IO16o','V01ZIM1RUM1DO02':'IO16o','V01ZIM1RUM1DO03':'IO16o',
            'V00WOH1SRA1LI01':'LEDs','V00WOH1SRA1LI02':'LEDs','V00WOH1SRA1LI03':'LEDs',
            'V00WOH1SRA1LI11':'DualRelay'}

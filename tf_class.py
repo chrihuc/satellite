@@ -14,6 +14,7 @@ from tinkerforge.bricklet_voltage_current import BrickletVoltageCurrent
 from tinkerforge.bricklet_distance_us import BrickletDistanceUS
 from tinkerforge.bricklet_dual_relay import BrickletDualRelay
 from tinkerforge.bricklet_co2 import BrickletCO2
+from tinkerforge.bricklet_motion_detector import BrickletMotionDetector
 from tinkerforge.brick_master import BrickMaster
 from threading import Timer
 import time
@@ -98,6 +99,7 @@ class tiFo:
         self.al = []
         self.drb = []
         self.master = []
+        self.md = []
         self.moist = None
         # Create IP Connection
         self.ipcon = IPConnection() 
@@ -191,6 +193,14 @@ class tiFo:
         for name in namelist:
             dicti['Name'] = name
             mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
+
+    def cb_md(self, device, uid):
+        dicti = {'Name':tifo_config.inputs.get(uid),'Value':1}
+        print dicti
+        
+    def cb_md_end(self, device, uid):
+        dicti = {'Name':tifo_config.inputs.get(uid),'Value':0}
+        print dicti       
 
     def set_io16_sub(self,cmd,io,value):
         port = cmd.get('Port') 
@@ -384,10 +394,20 @@ class tiFo:
 #                self.moist.set_moisture_callback_period(10000)
 #                self.moist.register_callback(self.moist.CALLBACK_MOISTURE, self.cb_moisture)
             
+            if device_identifier == BrickletMotionDetector.DEVICE_IDENTIFIER:   
+                self.md.append(BrickletMotionDetector(uid, self.ipcon))
+                temp_uid = str(self.md[-1].get_identity()[1]) +"."+ str(self.md[-1].get_identity()[0])
+                self.md[-1].register_callback(self.md[-1].CALLBACK_MOTION_DETECTED, partial( self.cb_md, device = self.md[-1], uid = temp_uid ))  
+                self.md[-1].register_callback(self.md[-1].CALLBACK_DETECTION_CYCLE_ENDED, partial( self.cb_md_end, device = self.md[-1], uid = temp_uid ))
+                if tifo_config.inputs.get(temp_uid) <> None:
+                    found  = True                
+            
             if device_identifier == BrickMaster.DEVICE_IDENTIFIER:   
                 self.master.append(BrickMaster(uid, self.ipcon))
                 thread_rs_error = Timer(60, self.thread_RSerror, [])
-                #thread_rs_error.start()                  
+                #thread_rs_error.start()       
+                if tifo_config.inputs.get(uid) <> None:
+                    found  = True                 
             
             if not found:
                 print connected_uid, uid, device_identifier
@@ -532,44 +552,44 @@ if __name__ == "__main__":
 #    data_ev['green'] = 0
 #    data_ev['blue'] = 255    
 #    tf.set_device(data_ev)    
-        
-    time.sleep(2)
-    data_ev['Device'] = 'V01ZIM1RUM1DO01'
-    data_ev['Value'] = 0
-    tf.set_device(data_ev) 
-    data_ev['Device'] = 'V01ZIM1RUM1DO02'
-    data_ev['Value'] = 1
-    tf.set_device(data_ev)    
-        
-    time.sleep(2)        
-    data_ev['Device'] = 'V01ZIM1RUM1DO01'
-    data_ev['Value'] = 1
-    tf.set_device(data_ev)   
-    data_ev['Device'] = 'V01ZIM1RUM1DO02'
-    data_ev['Value'] = 0
-    tf.set_device(data_ev) 
-    data_ev['Device'] = 'V01ZIM1RUM1DO03'
-    data_ev['Value'] = 1
-    tf.set_device(data_ev) 
-
-    time.sleep(2)        
-    data_ev['Device'] = 'V01ZIM1RUM1DO01'
-    data_ev['Value'] = 1
-    tf.set_device(data_ev) 
-    
-    time.sleep(2)        
-    data_ev['Device'] = 'V01ZIM1RUM1DO01'
-    data_ev['Value'] = 0
-    tf.set_device(data_ev) 
-    data_ev['Device'] = 'V01ZIM1RUM1DO02'
-    data_ev['Value'] = 1
-    tf.set_device(data_ev) 
-    data_ev['Device'] = 'V01ZIM1RUM1DO03'
-    data_ev['Value'] = 0    
-    tf.set_device(data_ev) 
-    #raw_input('Press key to exit\n') # Use input() in Python 3   
-    #sb.set_one_color(rot = 255)
-    #raw_input('Press key to exit\n')   
+#        
+#    time.sleep(2)
+#    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+#    data_ev['Value'] = 0
+#    tf.set_device(data_ev) 
+#    data_ev['Device'] = 'V01ZIM1RUM1DO02'
+#    data_ev['Value'] = 1
+#    tf.set_device(data_ev)    
+#        
+#    time.sleep(2)        
+#    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+#    data_ev['Value'] = 1
+#    tf.set_device(data_ev)   
+#    data_ev['Device'] = 'V01ZIM1RUM1DO02'
+#    data_ev['Value'] = 0
+#    tf.set_device(data_ev) 
+#    data_ev['Device'] = 'V01ZIM1RUM1DO03'
+#    data_ev['Value'] = 1
+#    tf.set_device(data_ev) 
+#
+#    time.sleep(2)        
+#    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+#    data_ev['Value'] = 1
+#    tf.set_device(data_ev) 
+#    
+#    time.sleep(2)        
+#    data_ev['Device'] = 'V01ZIM1RUM1DO01'
+#    data_ev['Value'] = 0
+#    tf.set_device(data_ev) 
+#    data_ev['Device'] = 'V01ZIM1RUM1DO02'
+#    data_ev['Value'] = 1
+#    tf.set_device(data_ev) 
+#    data_ev['Device'] = 'V01ZIM1RUM1DO03'
+#    data_ev['Value'] = 0    
+#    tf.set_device(data_ev) 
+#    raw_input('Press key to exit\n') # Use input() in Python 3   
+#    #sb.set_one_color(rot = 255)
+    raw_input('Press key to exit\n')   
     #time.sleep(15)
     #sb.flash(start = 0, new = True, n_blau = 255) 
     #sb.flash(start = 15, new = True, n_blau = 255)
