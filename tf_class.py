@@ -382,7 +382,7 @@ class tiFo:
             if device_identifier == AmbientLight.DEVICE_IDENTIFIER:
                 self.al.append(AmbientLight(uid, self.ipcon))
                 self.al[-1].set_illuminance_callback_threshold('o', 0, 0)
-                self.al[-1].set_debounce_period(100)
+                self.al[-1].set_debounce_period(10)
                 #self.al.set_illuminance_callback_threshold('<', 30, 30)
                 #self.al.set_analog_value_callback_period(10000)
                 #self.al.set_illuminance_callback_period(10000)
