@@ -360,7 +360,7 @@ class tiFo:
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
             return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'LEDs':
-            return self.set_LED(data_ev) #data_ev.get('Device'),data_ev.get('red'),data_ev.get('green'),data_ev.get('blue'),data_ev.get('transitiontime'))      
+            return self.set_LED(**data_ev) #data_ev.get('Device'),data_ev.get('red'),data_ev.get('green'),data_ev.get('blue'),data_ev.get('transitiontime'))      
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'DualRelay':
             return self.set_drb(data_ev.get('Device'),data_ev.get('Value'))            
         else:
