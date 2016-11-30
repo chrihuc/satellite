@@ -291,7 +291,7 @@ class tiFo:
 
     def set_LED(self, **kwargs):
 #        device, rot, gruen, blau, transitiontime, transition=ANSTEIGEND
-        device = kwargs.get('device')
+        device = kwargs.get('Device')
         rot = kwargs.get('rot')
         gruen = kwargs.get('gruen')
         blau = kwargs.get('blau')
