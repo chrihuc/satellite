@@ -28,6 +28,7 @@ time.sleep(2)
 def git_update():
     global run
     g = git.cmd.Git()
+    g.reset('--hard')
     g.pull()
     print "Update done, exiting"
     run = False

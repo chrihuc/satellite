@@ -30,6 +30,11 @@ from socket import socket, AF_INET, SOCK_DGRAM
 
 mySocket = socket( AF_INET, SOCK_DGRAM )
 
+# tranisiton modes
+ANSTEIGEND = 0
+ABSTEIGEND = 1
+ZUSAMMEN = 2
+GEMISCHT = 3
 
 class io16Dict:
     def __init__(self):
@@ -116,6 +121,7 @@ class tiFo:
         # Connect to brickd, will trigger cb_connected
         self.ipcon.connect(constants.ownIP, PORT) 
         self.unknown = []
+        self.threadliste = []
         #self.ipcon.enumerate()        
 
     def thread_RSerror(self):
@@ -283,7 +289,16 @@ class tiFo:
                             self.set_io16_sub(cmd,io,cmd.get('Value'))
         return True                           
 
-    def set_LED(self, device, rot, gruen, blau, transitiontime):
+    def set_LED(self, **kwargs):
+#        device, rot, gruen, blau, transitiontime, transition=ANSTEIGEND
+        device = kwargs.get('device')
+        rot = kwargs.get('rot')
+        gruen = kwargs.get('gruen')
+        blau = kwargs.get('blau')
+        transitiontime = kwargs.get('transitiontime')
+        transition = kwargs.get('transition',ANSTEIGEND)
+#        gradient
+#        lauflicht
         if rot <= 0:
             rot  = 0
         if gruen <= 0:
@@ -303,13 +318,24 @@ class tiFo:
                     laenge = (ende-start)
                     while (laenge) > 16:
                         laenge = 16
+#                         TODO check that command is executed
+#                        while not (red, green, blue) == LED.get('LED').get_rgb_values(start, laenge):
                         LED.get('LED').set_rgb_values(start, laenge, red, green, blue)
                         start += laenge
                         laenge = (ende-start)
                     else:
                         LED.get('LED').set_rgb_values(start, laenge, red, green, blue)
-#                    for birne in range(start,ende):
-#                        LED.get('LED').set_rgb_values(birne, 1, red, green, blue)
+                else:
+#                    Ansteigend
+                    if transition == ANSTEIGEND:
+                        wartezeit = transitiontime / (ende-start)
+                        for birne in range(start,ende):
+                            LED.get('LED').set_rgb_values(birne, 1, red, green, blue)  
+                            time.sleep(wartezeit)
+#        TODO Transition, 4 types
+#        von links nach rechts (ansteigend), von rechts nach links (absteigend)
+#        alle zusammen, beides                
+
         return True
          
     def set_drb(self, device, value):
@@ -334,7 +360,7 @@ class tiFo:
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
             return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'LEDs':
-            return self.set_LED(data_ev.get('Device'),data_ev.get('red'),data_ev.get('green'),data_ev.get('blue'),data_ev.get('transitiontime'))      
+            return self.set_LED(data_ev) #data_ev.get('Device'),data_ev.get('red'),data_ev.get('green'),data_ev.get('blue'),data_ev.get('transitiontime'))      
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'DualRelay':
             return self.set_drb(data_ev.get('Device'),data_ev.get('Value'))            
         else:
@@ -392,10 +418,11 @@ class tiFo:
                 #self.al[-1].register_callback(self.al[-1].CALLBACK_ILLUMINANCE_REACHED, lambda event1, event2, event3, args=args: self.cb_ambLight(event1, event2, event3, args))
                 self.al[-1].register_callback(self.al[-1].CALLBACK_ILLUMINANCE_REACHED, partial( self.cb_ambLight,  device=args))
                 temp_uid = str(self.al[-1].get_identity()[1]) +"."+ str(self.al[-1].get_identity()[0])
-                thread_cb_amb = Timer(60, self.thread_ambLight, [self.al[-1]])
+                
                 #thread_cb_amb.start()                 
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True
+                    thread_cb_amb = Timer(60, self.thread_ambLight, [self.al[-1]])
 
             if device_identifier == BrickletCO2.DEVICE_IDENTIFIER:
                 self.co2.append(BrickletCO2(uid, self.ipcon))
@@ -403,7 +430,8 @@ class tiFo:
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True  
                     thread_co2_ = Timer(5, self.thread_CO2, [self.co2[-1]])
-                    thread_co2_.start() 
+                    thread_co2_.start()    
+                    self.threadliste.append(thread_co2_)
 
             if device_identifier == BrickletDualRelay.DEVICE_IDENTIFIER:
                 self.drb.append(BrickletDualRelay(uid, self.ipcon))
@@ -436,7 +464,8 @@ class tiFo:
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True  
                     thread_pt_ = Timer(5, self.thread_pt, [self.ptc[-1]])
-                    thread_pt_.start()             
+                    thread_pt_.start()   
+                    self.threadliste.append(thread_pt_)
             
             if device_identifier == BrickMaster.DEVICE_IDENTIFIER:   
                 self.master.append(BrickMaster(uid, self.ipcon))
