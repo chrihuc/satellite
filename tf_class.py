@@ -328,7 +328,7 @@ class tiFo:
                 else:
 #                    Ansteigend
                     if transition == ANSTEIGEND:
-                        wartezeit = transitiontime / (ende-start)
+                        wartezeit = int(transitiontime) / (ende-start)
                         for birne in range(start,ende):
                             LED.get('LED').set_rgb_values(birne, 1, red, green, blue)  
                             time.sleep(wartezeit)
