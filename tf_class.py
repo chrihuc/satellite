@@ -352,9 +352,9 @@ class tiFo:
     def set_LED(self, **kwargs):
 #        device, rot, gruen, blau, transitiontime, transition=ANSTEIGEND
         device = kwargs.get('Device')
-        green = kwargs.get('red')
-        blue = kwargs.get('green')
-        red = kwargs.get('blue')
+        green = kwargs.get('red',0)
+        blue = kwargs.get('green',0)
+        red = kwargs.get('blue',0)
         transitiontime = kwargs.get('transitiontime')
         transition = kwargs.get('transition',ANSTEIGEND)
         proc = kwargs.get('percentage',None)
@@ -362,7 +362,7 @@ class tiFo:
         red_1 = kwargs.get('blue_1','None')
         green_1 = kwargs.get('red_1','None')
         blue_1 = kwargs.get('green_1','None')
-        
+
 #        gradient
 #        lauflicht          
         LEDDict = tifo_config.LEDsOut.get(device)
@@ -373,24 +373,24 @@ class tiFo:
         delta_r = 0
         delta_g = 0
         delta_b = 0        
-        if red_1 == 'None' & green_1 == 'None' & blue_1 == 'None':
+        if str(red_1) == 'None' and str(green_1) == 'None' and str(blue_1) == 'None':
             red = [int(red)]*16
             green = [int(green)]*16
             blue = [int(blue)]*16 
             gradient = False
         else:
             laenge = (ende-start)
-            if not red_1 == 'None':
+            if not str(red_1) == 'None':
                 delta_r = red_1 - red
                 delta_pr = float(delta_r) / laenge
             else:
                 delta_pr = 0
-            if not green_1 == 'None':
+            if not str(green_1) == 'None':
                 delta_g = (green_1 - green)  
                 delta_pg = float(delta_g) / laenge
             else:
                 delta_pg = 0                
-            if not blue_1 == 'None':
+            if not str(blue_1) == 'None':
                 delta_b = (blue_1 - blue)    
                 delta_pb = float(delta_b) / laenge 
             else:
@@ -428,7 +428,7 @@ class tiFo:
                         self._set_LED_zusammen(LED,start,ende,red,green,blue,transitiontime)  
                 else:
                     for birne in range(laenge):
-                        LED.get('LED').set_rgb_values(birne, 1, red, green, blue)  
+                        LED.get('LED').set_rgb_values(birne, 1, [int(red)]*16, [int(green)]*16, [int(blue)]*16)  
                         red += delta_pr
                         green += delta_pg
                         blue += delta_pb                       
