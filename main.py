@@ -79,6 +79,7 @@ while run:
             conn.close()             
             git_update()       
         elif 'Device' in data_ev:
+#           TODO threaded commands and stop if new comes in
            result = tf.set_device(data_ev)             
     conn.send(str(result))
     conn.close()           

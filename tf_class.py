@@ -289,33 +289,120 @@ class tiFo:
                             self.set_io16_sub(cmd,io,cmd.get('Value'))
         return True                           
 
+    def _set_LED_zusammen(self,LED,start,ende,red,green,blue,transitiontime):
+        laenge = (ende-start)                        
+        o_r, o_g, o_b = LED.get('LED').get_rgb_values(start, 1)
+        steps = abs(red-o_r) + abs(green-o_g) + abs(blue-o_b)
+        wartezeit = float(transitiontime) / steps 
+        while o_r <> red or o_g <> green or o_b <> blue:
+            while (laenge) > 16:
+                laenge = 16
+                if (red-o_r) > 0:
+                    o_r = o_r + 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)
+                elif (red-o_r) < 0:
+                    o_r = o_r - 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)
+                if (green-o_g) > 0:
+                    o_g = o_g + 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)
+                elif (green-o_g) < 0:
+                    o_g = o_g - 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit) 
+                if (blue-o_b) > 0:
+                    o_b = o_b + 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)
+                elif (blue-o_b) < 0:
+                    o_b = o_b - 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)                                     
+                start += laenge
+                laenge = (ende-start)
+            else:
+                if (red-o_r) > 0:
+                    o_r = o_r + 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)
+                elif (red-o_r) < 0:
+                    o_r = o_r - 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)
+                if (green-o_g) > 0:
+                    o_g = o_g + 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)
+                elif (green-o_g) < 0:
+                    o_g = o_g - 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit) 
+                if (blue-o_b) > 0:
+                    o_b = o_b + 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)
+                elif (blue-o_b) < 0:
+                    o_b = o_b - 1
+                    LED.get('LED').set_rgb_values(start, laenge, o_r, o_g, o_b)
+                    time.sleep(wartezeit)       
+        
     def set_LED(self, **kwargs):
 #        device, rot, gruen, blau, transitiontime, transition=ANSTEIGEND
         device = kwargs.get('Device')
-        rot = kwargs.get('red')
-        gruen = kwargs.get('green')
-        blau = kwargs.get('blue')
+        green = kwargs.get('red')
+        blue = kwargs.get('green')
+        red = kwargs.get('blue')
         transitiontime = kwargs.get('transitiontime')
         transition = kwargs.get('transition',ANSTEIGEND)
+        proc = kwargs.get('percentage',None)
+
+        red_1 = kwargs.get('blue_1','None')
+        green_1 = kwargs.get('red_1','None')
+        blue_1 = kwargs.get('green_1','None')
+        
 #        gradient
-#        lauflicht
-        if rot <= 0:
-            rot  = 0
-        if gruen <= 0:
-            gruen  = 0
-        if blau <= 0:
-            blau  = 0            
+#        lauflicht          
         LEDDict = tifo_config.LEDsOut.get(device)
         uid = LEDDict.get('UID')
         start = LEDDict.get('Start')
         ende = LEDDict.get('Ende')
-        red = [int(blau)]*16
-        green = [int(rot)]*16
-        blue = [int(gruen)]*16   
+#        TODO vectorize
+        delta_r = 0
+        delta_g = 0
+        delta_b = 0        
+        if red_1 == 'None' & green_1 == 'None' & blue_1 == 'None':
+            red = [int(red)]*16
+            green = [int(green)]*16
+            blue = [int(blue)]*16 
+            gradient = False
+        else:
+            laenge = (ende-start)
+            if not red_1 == 'None':
+                delta_r = red_1 - red
+                delta_pr = float(delta_r) / laenge
+            else:
+                delta_pr = 0
+            if not green_1 == 'None':
+                delta_g = (green_1 - green)  
+                delta_pg = float(delta_g) / laenge
+            else:
+                delta_pg = 0                
+            if not blue_1 == 'None':
+                delta_b = (blue_1 - blue)    
+                delta_pb = float(delta_b) / laenge 
+            else:
+                delta_pb = 0 
+            gradient = True
+
         for LED in self.LEDList.liste:
             if LED.get('addr') == uid:
-                if transitiontime == None or transitiontime <= 0:
-                    laenge = (ende-start)
+                laenge = (ende-start)
+                if proc <> None:
+                    laenge = int(float(proc)/100 * laenge)                  
+                if (transitiontime == None or transitiontime <= 0) and not gradient:                  
                     while (laenge) > 16:
                         laenge = 16
 #                         TODO check that command is executed
@@ -325,13 +412,26 @@ class tiFo:
                         laenge = (ende-start)
                     else:
                         LED.get('LED').set_rgb_values(start, laenge, red, green, blue)
-                else:
+                elif not (transitiontime == None or transitiontime <= 0):
 #                    Ansteigend
                     if transition == ANSTEIGEND:
                         wartezeit = float(transitiontime) / (ende-start)
                         for birne in range(start,ende):
                             LED.get('LED').set_rgb_values(birne, 1, red, green, blue)  
                             time.sleep(wartezeit)
+                    elif transition == ABSTEIGEND:
+                        wartezeit = float(transitiontime) / (ende-start)
+                        for birne in list(reversed(range(start,ende))):
+                            LED.get('LED').set_rgb_values(birne, 1, red, green, blue)  
+                            time.sleep(wartezeit)        
+                    elif transition == ZUSAMMEN:
+                        self._set_LED_zusammen(LED,start,ende,red,green,blue,transitiontime)  
+                else:
+                    for birne in range(laenge):
+                        LED.get('LED').set_rgb_values(birne, 1, red, green, blue)  
+                        red += delta_pr
+                        green += delta_pg
+                        blue += delta_pb                       
 #        TODO Transition, 4 types
 #        von links nach rechts (ansteigend), von rechts nach links (absteigend)
 #        alle zusammen, beides                
@@ -355,6 +455,7 @@ class tiFo:
          
          
     def set_device(self, data_ev): 
+#       TODO do threaded with stop criteria
         if tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
             return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))
         elif tifo_config.outputs.get(data_ev.get('Device')) == 'IO16o':
