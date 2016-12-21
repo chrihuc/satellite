@@ -404,7 +404,7 @@ class tiFo:
         for LED in self.LEDList.liste:
             if LED.get('addr') == uid:
                 laenge = (ende-start)
-                if proc <> None and proc in range(101):
+                if proc <> None and 0 <= proc <= 100:
                     laenge = int(float(proc)/100 * laenge)                  
                 elif proc <> None and proc < 0:
                     laenge = 0  
