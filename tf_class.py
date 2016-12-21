@@ -352,9 +352,9 @@ class tiFo:
     def set_LED(self, **kwargs):
 #        device, rot, gruen, blau, transitiontime, transition=ANSTEIGEND
         device = kwargs.get('Device')
-        green = kwargs.get('red',0)
-        blue = kwargs.get('green',0)
-        red = kwargs.get('blue',0)
+        green = int(kwargs.get('red',0))
+        blue = int(kwargs.get('green',0))
+        red = int(kwargs.get('blue',0))
         transitiontime = kwargs.get('transitiontime')
         transition = kwargs.get('transition',ANSTEIGEND)
         proc = kwargs.get('percentage',None)
@@ -362,6 +362,10 @@ class tiFo:
         red_1 = kwargs.get('blue_1','None')
         green_1 = kwargs.get('red_1','None')
         blue_1 = kwargs.get('green_1','None')
+
+        red_2 = int(kwargs.get('blue_2',0))
+        green_2 = int(kwargs.get('red_2',0))
+        blue_2 = int(kwargs.get('green_2',0))        
 
 #        gradient
 #        lauflicht          
@@ -381,17 +385,17 @@ class tiFo:
         else:
             laenge = (ende-start)
             if not str(red_1) == 'None':
-                delta_r = red_1 - red
+                delta_r = int(red_1) - int(red)
                 delta_pr = float(delta_r) / laenge
             else:
                 delta_pr = 0
             if not str(green_1) == 'None':
-                delta_g = (green_1 - green)  
+                delta_g = (int(green_1) -int(green))
                 delta_pg = float(delta_g) / laenge
             else:
                 delta_pg = 0                
             if not str(blue_1) == 'None':
-                delta_b = (blue_1 - blue)    
+                delta_b = (int(blue_1) - int(blue))    
                 delta_pb = float(delta_b) / laenge 
             else:
                 delta_pb = 0 
@@ -400,8 +404,10 @@ class tiFo:
         for LED in self.LEDList.liste:
             if LED.get('addr') == uid:
                 laenge = (ende-start)
-                if proc <> None:
+                if proc <> None and proc in range(101):
                     laenge = int(float(proc)/100 * laenge)                  
+                elif proc <> None and proc < 0:
+                    laenge = 0  
                 if (transitiontime == None or transitiontime <= 0) and not gradient:                  
                     while (laenge) > 16:
                         laenge = 16
@@ -427,11 +433,13 @@ class tiFo:
                     elif transition == ZUSAMMEN:
                         self._set_LED_zusammen(LED,start,ende,red,green,blue,transitiontime)  
                 else:
-                    for birne in range(laenge):
+                    for birne in range(start,laenge):
                         LED.get('LED').set_rgb_values(birne, 1, [int(red)]*16, [int(green)]*16, [int(blue)]*16)  
                         red += delta_pr
                         green += delta_pg
-                        blue += delta_pb                       
+                        blue += delta_pb  
+                    for birne in range(laenge,ende):
+                        LED.get('LED').set_rgb_values(birne, 1, [int(red_2)]*16, [int(green_2)]*16, [int(blue_2)]*16)                          
 #        TODO Transition, 4 types
 #        von links nach rechts (ansteigend), von rechts nach links (absteigend)
 #        alle zusammen, beides                
