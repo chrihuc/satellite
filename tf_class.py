@@ -355,6 +355,11 @@ class tiFo:
         green = int(kwargs.get('red',0))
         blue = int(kwargs.get('green',0))
         red = int(kwargs.get('blue',0))
+        for color in [red,green,blue]:
+            if color > 255:
+                color = 255
+            if color < 0:
+                color = 0
         transitiontime = kwargs.get('transitiontime')
         transition = kwargs.get('transition',ANSTEIGEND)
         proc = kwargs.get('percentage',None)
