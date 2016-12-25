@@ -440,12 +440,12 @@ class tiFo:
                     elif transition == ZUSAMMEN:
                         self._set_LED_zusammen(LED,start,ende,red,green,blue,transitiontime)  
                 else:
-                    for birne in range(start,(start+laenge):
+                    for birne in range(start,(start+laenge)):
                         LED.get('LED').set_rgb_values(birne, 1, [int(red)]*16, [int(green)]*16, [int(blue)]*16)  
                         red += delta_pr
                         green += delta_pg
                         blue += delta_pb  
-                    for birne in range(laenge,ende):
+                    for birne in range((start+laenge),ende):
                         LED.get('LED').set_rgb_values(birne, 1, [int(red_2)]*16, [int(green_2)]*16, [int(blue_2)]*16)                          
 #        TODO Transition, 4 types
 #        von links nach rechts (ansteigend), von rechts nach links (absteigend)
