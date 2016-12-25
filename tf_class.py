@@ -352,14 +352,16 @@ class tiFo:
     def set_LED(self, **kwargs):
 #        device, rot, gruen, blau, transitiontime, transition=ANSTEIGEND
         device = kwargs.get('Device')
+#        range check kwargs
+        for varia in ['red','green','blue']:
+            if int(kwargs.get(varia)) > 255:
+                kwargs[varia] = 255
+            if int(kwargs.get(varia)) < 0:
+                kwargs[varia] = 0            
         green = int(kwargs.get('red',0))
         blue = int(kwargs.get('green',0))
         red = int(kwargs.get('blue',0))
-        for color in [red,green,blue]:
-            if color > 255:
-                color = 255
-            if color < 0:
-                color = 0
+
         transitiontime = kwargs.get('transitiontime')
         transition = kwargs.get('transition',ANSTEIGEND)
         proc = kwargs.get('percentage',None)
@@ -438,7 +440,7 @@ class tiFo:
                     elif transition == ZUSAMMEN:
                         self._set_LED_zusammen(LED,start,ende,red,green,blue,transitiontime)  
                 else:
-                    for birne in range(start,laenge):
+                    for birne in range(start,(start+laenge):
                         LED.get('LED').set_rgb_values(birne, 1, [int(red)]*16, [int(green)]*16, [int(blue)]*16)  
                         red += delta_pr
                         green += delta_pg
