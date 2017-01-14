@@ -5,15 +5,22 @@ import socket
 import time
 
 from tf_class import tiFo
+import tifo_config
+# TODO: LED Class
+# TODO: network supervision
+# TODO: Tuer switch
+# TODO: USB key
+# TODO: z-wave class
 import constants
 import sys, os
 import git
 
-PORT_NUMBER = 5005
+# mySocket for receiving TCP commands
+# hbtsocked for sending the heartbeats to the server
 mySocket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 hbtsocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
 mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-mySocket.bind( ('', PORT_NUMBER) )
+mySocket.bind( ('', constants.biPort) )
 mySocket.listen(128)
 SIZE = 1024
 
@@ -21,9 +28,10 @@ threadliste = []
 
 run = True
 
-os.system("sudo service brickd stop")
-os.system("sudo service brickd start")
-time.sleep(2)
+if constants.tifo:
+    os.system("sudo service brickd stop")
+    os.system("sudo service brickd start")
+    time.sleep(2)
 
 def git_update():
     global run
@@ -49,12 +57,23 @@ def send_heartbeat():
                 break
             time.sleep(1)
 
-hb = threading.Thread(name="TiFo", target=send_heartbeat, args = [])
+hb = threading.Thread(name="Heartbeat", target=send_heartbeat, args = [])
 threadliste.append(hb)
 hb.start()
 
-tf = tiFo()
+if constants.tifo:
+    tf = tiFo()
 
+if constants.PiLEDs:
+    from led_class import LEDs
+    inp = LEDs()  
+
+if constants.PiInputs:
+    from switch import tuer_switch
+
+if constants.USBkeys:
+    from usb import usb_key
+    
 #tuer = tuer_switch()
 #t = threading.Thread(target=tuer.monitor, args = [])
 #t.start()
@@ -80,6 +99,10 @@ while run:
             git_update()       
         elif 'Device' in data_ev:
 #           TODO threaded commands and stop if new comes in
-           result = tf.set_device(data_ev)             
+            if data_ev.get('Device') in tifo_config.outputs:
+                result = tf.set_device(data_ev) 
+            elif constants.name in constants.LEDoutputs:
+                if data_ev.get('Device') in constants.LEDoutputs[constants.name]:
+                    result = inp.set_device(data_ev)                
     conn.send(str(result))
     conn.close()           

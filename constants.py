@@ -5,9 +5,13 @@ Created on Sat Apr  2 08:27:20 2016
 @author: christoph
 """
 import ConfigParser
+import socket
+
+own_ip = socket.gethostbyname(socket.gethostname())
 
 cfg_main={'Name':'Satellite1','Server1':'192.168.192.10','broadPort':5000,'biPort':5005,
-          'ownIP':'127.0.0.1','tifo':False,'OS':False}
+          'ownIP':own_ip,'tifo':False,'OS':False,'PiLEDs':False,'PiInputs':False,
+          'USBkeys':False,'wifi':False}
 
 config = ConfigParser.RawConfigParser()
 
@@ -32,5 +36,16 @@ for i in range(0,2):
         broadPort = config.getint('Main', 'broadPort')
         biPort = config.getint('Main', 'biPort')
         ownIP = config.get('Main', 'ownIP')
+        tifo = config.getboolean('Main', 'tifo')
+        operatingstation = config.getboolean('Main', 'OS')
+        PiLEDs = config.getboolean('Main', 'PiLEDs')
+        PiInputs = config.getboolean('Main', 'PiInputs')
+        USBkeys = config.getboolean('Main', 'USBkeys')  
+        wifi = config.getboolean('Main', 'wifi')          
     except:
         init_cfg()
+    
+LEDoutputs = {'TuersPi':'Vm1ZIM1SAT1LI01'}        
+        
+if __name__ == '__main__':
+    print name, ownIP
