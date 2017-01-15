@@ -4,7 +4,6 @@ import threading
 import socket
 import time
 
-from tf_class import tiFo
 import tifo_config
 # TODO: LED Class
 # TODO: network supervision
@@ -62,6 +61,7 @@ threadliste.append(hb)
 hb.start()
 
 if constants.tifo:
+    from tf_class import tiFo
     tf = tiFo()
 
 if constants.PiLEDs:
@@ -99,7 +99,7 @@ while run:
             git_update()       
         elif 'Device' in data_ev:
 #           TODO threaded commands and stop if new comes in
-            if data_ev.get('Device') in tifo_config.outputs:
+            if constants.tifo and data_ev.get('Device') in tifo_config.outputs:
                 result = tf.set_device(data_ev) 
             elif constants.name in constants.LEDoutputs:
                 if data_ev.get('Device') in constants.LEDoutputs[constants.name]:
