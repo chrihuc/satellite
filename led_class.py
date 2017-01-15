@@ -123,8 +123,13 @@ class LEDs:
                             self.setze_leds(cycle = self.f1, value = j)
                             time.sleep(speed)
                             
-    def set_device(data_ev):
-        pass
+    def set_device(self, **kwargs):
+        device = kwargs.get('Device')
+        rot = kwargs.get('red',self.aus)
+        gelb = kwargs.get('yellow',self.aus)
+        gruen = kwargs.get('green',self.aus)      
+        go_back = kwargs.get('go_back',False) 
+        self.schalte(ro = rot, ge = gelb, gr = gruen, erinn = go_back)
     
             
 if  __name__ =='__main__':main()                    

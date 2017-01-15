@@ -66,7 +66,7 @@ if constants.tifo:
 
 if constants.PiLEDs:
     from led_class import LEDs
-    inp = LEDs()  
+    leds = LEDs()  
 
 if constants.PiInputs:
     from switch import tuer_switch
@@ -103,6 +103,6 @@ while run:
                 result = tf.set_device(data_ev) 
             elif constants.name in constants.LEDoutputs:
                 if data_ev.get('Device') in constants.LEDoutputs[constants.name]:
-                    result = inp.set_device(data_ev)                
+                    result = leds.set_device(data_ev)                
     conn.send(str(result))
     conn.close()           
