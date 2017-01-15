@@ -10,8 +10,14 @@ import socket
 own_ip = socket.gethostbyname(socket.gethostname())
 
 cfg_main={'Name':'Satellite1','Server1':'192.168.192.10','broadPort':5000,'biPort':5005,
-          'ownIP':own_ip,'tifo':False,'OS':False,'PiLEDs':False,'PiInputs':False,
-          'USBkeys':False,'wifi':False}
+          'ownIP':own_ip,
+          'tifo':False,
+          'OS':False,       # Operator Station
+          'PiLEDs':False,
+          'PiInputs':False,
+          'USBkeys':False,
+          'wifi':False,
+          'Z-wave':False}
 
 config = ConfigParser.RawConfigParser()
 
@@ -41,7 +47,8 @@ for i in range(0,2):
         PiLEDs = config.getboolean('Main', 'PiLEDs')
         PiInputs = config.getboolean('Main', 'PiInputs')
         USBkeys = config.getboolean('Main', 'USBkeys')  
-        wifi = config.getboolean('Main', 'wifi')          
+        wifi = config.getboolean('Main', 'wifi')     
+        zwave = config.getboolean('Main', 'Z-wave')
     except:
         init_cfg()
     
