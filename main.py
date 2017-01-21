@@ -73,7 +73,13 @@ if constants.PiInputs:
 
 if constants.USBkeys:
     from usb import usb_key
-    
+
+if constants.wifi:
+    import net_sup
+    wifi_sup = threading.Thread(name='wifi', target=net_sup.main, args=[])
+    threadliste.append(wifi_sup)
+    wifi_sup.start()
+
 #tuer = tuer_switch()
 #t = threading.Thread(target=tuer.monitor, args = [])
 #t.start()

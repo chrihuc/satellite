@@ -29,13 +29,14 @@ def reset_wlan():
     #os.system('sudo ifup wlan0')
     #os.system('sudo killall python')
 
-while 1==1:
-    count = 0
-    while not ping('192.168.192.1'):
-        reset_wlan()
+def main():
+    while 1==1:
+        count = 0
+        while not ping('192.168.192.1'):
+            reset_wlan()
+            time.sleep(60)
+            count += 1
+            if count > 2:
+                pass
+                os.system('sudo reboot')
         time.sleep(60)
-        count += 1
-        if count > 2:
-            pass
-            os.system('sudo reboot')    
-    time.sleep(60)    
