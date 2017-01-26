@@ -10,6 +10,7 @@ import tifo_config
 # TODO: Tuer switch
 # TODO: USB key
 # TODO: z-wave class
+import zw_config
 import constants
 import sys, os
 import git
@@ -80,6 +81,10 @@ if constants.wifi:
     threadliste.append(wifi_sup)
     wifi_sup.start()
 
+if constants.zwave:
+    from zw_class import zwave
+    zwa = zwave()
+
 #tuer = tuer_switch()
 #t = threading.Thread(target=tuer.monitor, args = [])
 #t.start()
@@ -109,6 +114,9 @@ while run:
                 result = tf.set_device(data_ev) 
             elif constants.name in constants.LEDoutputs:
                 if data_ev.get('Device') in constants.LEDoutputs[constants.name]:
-                    result = leds.set_device(data_ev)                
+                    result = leds.set_device(data_ev)
+            elif constants.zwave and data_ev['Device'] in zw_config.outputs:
+                result = zwa.set_device(data_ev)
+
     conn.send(str(result))
     conn.close()           

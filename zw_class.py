@@ -111,11 +111,14 @@ class zwave(object):
 
     def end_network(self):
         self.network.stop()
+
+    def set_switch(self,node, switch, value):
+        self.network.nodes[node].set_switch(switch, value)
         
     def set_device(self, data_ev): 
 #       TODO do threaded with stop criteria
-        if zw_config.devices[data_ev.get('Device')] == 'IO16o':
-            return self.set_io16(data_ev.get('Device'),data_ev.get('Value'))        
+        if data_ev.get('Device') in zw_config.switches:
+            return self.set_switch(data_ev['Device'],data_ev['Value'][0],data_ev['Value'][1])
 
 if __name__ == "__main__":
     zwnw = zwave()
