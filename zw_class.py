@@ -45,10 +45,16 @@ class zwave(object):
         print("Hello from node : {}.".format(node))
     
     def louie_value_update(self, network, node, value):
-        print("Hello from value : {}.".format( value ))
+        # TODO: catch exception
+        try:
+            print zw_config.inputs[node.home_id][value.value_id], value.data
+        except:
+            print 'not understood', node.home_id, value.value_id, value.data
+#        print("Hello from value : {}.".format( value ))
     #    home_id: [0xeefad666] id: [72057594093060096] parent_id: [3] label: [Switch] data: [False].
     #    home_id: [0xeefad666] id: [72057594093273218] parent_id: [3] label: [Power] data: [0.0].
     #    home_id: [0xeefad666] id: [144115188131201026] parent_id: [3] label: [Energy] data: [0.00999999977648]
+    #   value.label = switch
 
     def __init__(self):
         #Create a network object
@@ -86,10 +92,10 @@ class zwave(object):
             #network.controller.node.location = "Hello location"
             
             
-            for node in self.network.nodes:
-                for val in self.network.nodes[node].get_switches() :
-                    print("Switch : {}".format(self.network.nodes[node]))
-                    print("Switch1: {}".format(val))
+#            for node in self.network.nodes:
+#                for val in self.network.nodes[node].get_switches() :
+#                    print("Switch : {}".format(self.network.nodes[node]))
+#                    print("Switch1: {}".format(val))
             #        72057594093060096
             #       144115188130988032
             #        network.nodes[node].set_switch(val,True)
@@ -97,10 +103,10 @@ class zwave(object):
                 #exit
             
             
-            for node in self.network.nodes:
-                for val in self.network.nodes[node].get_dimmers() :
-                   print("Dimmer : {}".format(self.network.nodes[node]))
-                   print("Switch1: {}".format(val))
+#            for node in self.network.nodes:
+#                for val in self.network.nodes[node].get_dimmers() :
+#                   print("Dimmer : {}".format(self.network.nodes[node]))
+#                   print("Switch1: {}".format(val))
             #        72057594093076481
             #        144115188131004513
             #        144115188131004417
@@ -112,13 +118,23 @@ class zwave(object):
     def end_network(self):
         self.network.stop()
 
-    def set_switch(self,node, switch, value):
-        self.network.nodes[node].set_switch(switch, value)
+    def _set_switch(self,_home_id, switch, wert):
+        for node in self.network.nodes:
+            for val in self.network.nodes[node].get_switches() :
+                if val == switch:
+                    print switch, wert
+                    if wert == 'Toggle':
+                        cur_val = self.network.nodes[node].get_switch_state(switch)
+                        self.network.nodes[node].set_switch(switch, not cur_val)
+                    else:
+                        self.network.nodes[node].set_switch(switch, eval(wert))
+        return True
         
     def set_device(self, data_ev): 
 #       TODO do threaded with stop criteria
         if data_ev.get('Device') in zw_config.switches:
-            return self.set_switch(data_ev['Device'],data_ev['Value'][0],data_ev['Value'][1])
+            print data_ev
+            return self._set_switch(zw_config.switches[data_ev['Device']][0],zw_config.switches[data_ev['Device']][1],data_ev['Value'])
 
 if __name__ == "__main__":
     zwnw = zwave()
