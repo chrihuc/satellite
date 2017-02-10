@@ -17,7 +17,8 @@ cfg_main={'Name':'Satellite1','Server1':'192.168.192.10','broadPort':5000,'biPor
           'PiInputs':False,
           'USBkeys':False,
           'wifi':False,
-          'Z-wave':False}
+          'Z-wave':False,
+          'Z-wave Path':'/home/pi/python-openzwave/openzwave/config'}
 
 config = ConfigParser.RawConfigParser()
 
@@ -49,6 +50,7 @@ for i in range(0,2):
         USBkeys = config.getboolean('Main', 'USBkeys')  
         wifi = config.getboolean('Main', 'wifi')     
         zwave = config.getboolean('Main', 'Z-wave')
+        zwpath = config.getboolean('Main', 'Z-wave Path')
     except:
         init_cfg()
     

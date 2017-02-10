@@ -11,6 +11,7 @@ import openzwave
 from openzwave.option import ZWaveOption
 from openzwave.network import ZWaveNetwork
 from louie import dispatcher
+import constants
 import zw_config
 
 device="/dev/ttyACM0"
@@ -20,7 +21,7 @@ class zwave(object):
 
     #Define some manager options
     options = ZWaveOption(device, \
-      config_path="/home/christoph/spyder/python-openzwave/openzwave/config", \
+      config_path=constants.zwpath, \
       user_path=".", cmd_line="")
     options.set_log_file("OZW_Log.log")
     options.set_append_log_file(False)
