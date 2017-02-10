@@ -50,7 +50,7 @@ for i in range(0,2):
         USBkeys = config.getboolean('Main', 'USBkeys')  
         wifi = config.getboolean('Main', 'wifi')     
         zwave = config.getboolean('Main', 'Z-wave')
-        zwpath = config.getboolean('Main', 'Z-wave Path')
+        zwpath = config.get('Main', 'Z-wave Path')
     except:
         init_cfg()
     
