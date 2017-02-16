@@ -104,7 +104,7 @@ while run:
         isdict = False 
     result = False
     if isdict:
-        if data_ev.get('Command')=='Update':
+        if data_ev.get('Szene')=='Update':
             conn.send('True')
             conn.close()             
             git_update()       

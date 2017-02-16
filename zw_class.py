@@ -48,7 +48,7 @@ class zwave(object):
     def louie_value_update(self, network, node, value):
         # TODO: catch exception
         try:
-            print zw_config.inputs[node.home_id][value.value_id], value.data
+            print zw_config.inputs[node.home_id][value.value_id], int(value.data)
         except:
             print 'not understood', node.home_id, value.value_id, value.data
 #        print("Hello from value : {}.".format( value ))
@@ -119,25 +119,39 @@ class zwave(object):
     def end_network(self):
         self.network.stop()
 
-    def _set_switch(self,_home_id, switch, wert):
-        for node in self.network.nodes:
-            for val in self.network.nodes[node].get_switches() :
-                if val == switch:
-                    print switch, wert
-                    if wert == 'Toggle':
-                        cur_val = self.network.nodes[node].get_switch_state(switch)
-                        self.network.nodes[node].set_switch(switch, not cur_val)
-                    else:
-                        self.network.nodes[node].set_switch(switch, eval(wert))
+    def _set_switch(self,node_id , switch, wert):
+        if wert == 'Toggle':
+            cur_val = self.network.nodes[node_id].get_switch_state(switch)
+            self.network.nodes[node_id].set_switch(switch, not cur_val)
+        else:
+            if eval(wert) > 0:
+                self.network.nodes[node_id].set_switch(switch, True)
+            else:
+                self.network.nodes[node_id].set_switch(switch, bool(eval(wert)))
         return True
+        
+    def _set_dimmer(self,node_id , dimmer, wert):
+        if wert == 'Toggle':
+            cur_val = self.network.nodes[node_id].get_dimmer_level(dimmer)
+            if cur_val == 0:
+                self.network.nodes[node_id].set_dimmer(dimmer, 50)
+            else:
+                self.network.nodes[node_id].set_dimmer(dimmer, 0)
+        else:
+            self.network.nodes[node_id].set_dimmer(dimmer, eval(wert))
+        return True       
         
     def set_device(self, data_ev): 
 #       TODO do threaded with stop criteria
         if data_ev.get('Device') in zw_config.switches:
             print data_ev
             return self._set_switch(zw_config.switches[data_ev['Device']][0],zw_config.switches[data_ev['Device']][1],data_ev['Value'])
+        if data_ev.get('Device') in zw_config.dimmer:
+            print data_ev
+            return self._set_dimmer(zw_config.dimmer[data_ev['Device']][0],zw_config.dimmer[data_ev['Device']][1],data_ev['Value'])
 
 if __name__ == "__main__":
     zwnw = zwave()
+    zwnw.set_device()
     raw_input('Press key to exit\n') 
     zwnw.end_network()
