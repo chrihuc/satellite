@@ -17,6 +17,10 @@ import zw_config
 device="/dev/ttyACM0"
 log="None"
 
+from socket import socket, AF_INET, SOCK_DGRAM
+
+mySocket = socket( AF_INET, SOCK_DGRAM )
+
 class zwave(object):
 
     #Define some manager options
@@ -49,6 +53,10 @@ class zwave(object):
         # TODO: catch exception
         try:
             print zw_config.inputs[node.home_id][value.value_id], int(value.data)
+            dicti = {'Value':str(int(value.data))}
+            dicti['Name'] = zw_config.inputs[node.home_id][value.value_id]
+            #print dicti
+            mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))            
         except:
             print 'not understood', node.home_id, value.value_id, value.data
 #        print("Hello from value : {}.".format( value ))
