@@ -35,18 +35,21 @@ class zwave(object):
     options.lock()
     
     def louie_network_started(self, network):
+        pass
         print("Hello from network : I'm started : homeid {:08x} - {} nodes were found.".format(network.home_id, network.nodes_count))
     
     def louie_network_failed(self, network):
+        pass
         print("Hello from network : can't load :(.")
     
     def louie_network_ready(self, network):
-        print("Hello from network : I'm ready : {} nodes were found.".format(network.nodes_count))
-        print("Hello from network : my controller is : {}".format(network.controller))
+#        print("Hello from network : I'm ready : {} nodes were found.".format(network.nodes_count))
+#        print("Hello from network : my controller is : {}".format(network.controller))
         dispatcher.connect(self.louie_node_update, ZWaveNetwork.SIGNAL_NODE)
         dispatcher.connect(self.louie_value_update, ZWaveNetwork.SIGNAL_VALUE)
     
     def louie_node_update(self, network, node):
+        pass
         print("Hello from node : {}.".format(node))
     
     def louie_value_update(self, network, node, value):
@@ -78,10 +81,10 @@ class zwave(object):
         self.network.start()
 
         #We wait for the network.
-        print("Waiting for network to become ready : ")
+        # print("Waiting for network to become ready : ")
         for i in range(0,90):
             if self.network.state>=self.network.STATE_READY:
-                print("Network is ready")
+                print "Network is ready"
                 break
             else:
                 sys.stdout.write(".")
