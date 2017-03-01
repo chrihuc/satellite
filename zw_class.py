@@ -78,10 +78,10 @@ class zwave(object):
         self.network.start()
 
         #We wait for the network.
-        print("***** Waiting for network to become ready : ")
+        print("Waiting for network to become ready : ")
         for i in range(0,90):
             if self.network.state>=self.network.STATE_READY:
-                print("***** Network is ready")
+                print("Network is ready")
                 break
             else:
                 sys.stdout.write(".")
