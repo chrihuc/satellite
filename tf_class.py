@@ -148,7 +148,7 @@ class tiFo:
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         
     def thread_ambLight(self, device):
-        illuminance = device.get_analog_value()
+        illuminance = device.get_illuminance()
         dicti = {}
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
         dicti['Value'] = str(illuminance)
