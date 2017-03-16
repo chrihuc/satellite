@@ -58,7 +58,10 @@ def send_heartbeat():
             time.sleep(1)
 
 def take_pic():
-    os.system("echo 'im' >/var/www/html/FIFO")            
+    os.system("echo 'im' >/var/www/html/FIFO")           
+    
+def take_vid():
+    os.system("echo 'ca 1 10' >/var/www/html/FIFO") 
             
 hb = threading.Thread(name="Heartbeat", target=send_heartbeat, args = [])
 threadliste.append(hb)
@@ -122,5 +125,7 @@ while run:
                 result = zwa.set_device(data_ev)
             elif constants.raspicam and data_ev['Name'] == 'Take_Pic':
                 take_pic()
+            elif constants.raspicam and data_ev['Name'] == 'Record_Video':
+                take_vid()                
     conn.send(str(result))
     conn.close()           
