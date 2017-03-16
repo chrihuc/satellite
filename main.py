@@ -57,6 +57,9 @@ def send_heartbeat():
                 break
             time.sleep(1)
 
+def take_pic():
+    os.system("echo 'im' >/var/www/html/FIFO")            
+            
 hb = threading.Thread(name="Heartbeat", target=send_heartbeat, args = [])
 threadliste.append(hb)
 hb.start()
@@ -117,6 +120,7 @@ while run:
                     result = leds.set_device(data_ev)
             elif constants.zwave and data_ev['Device'] in zw_config.outputs:
                 result = zwa.set_device(data_ev)
-
+            elif constants.raspicam and data_ev['Name'] == 'Take_Pic':
+                take_pic()
     conn.send(str(result))
     conn.close()           
