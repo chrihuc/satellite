@@ -81,7 +81,8 @@ if constants.PiLEDs:
 if constants.PiInputs:
     from switch import gpio_input_monitoring
     eingang = gpio_input_monitoring()
-    t = threading.Thread(target=eingang.monitor, args = [])
+    t = threading.Thread(name='inp_monitor',target=eingang.monitor, args = [])
+    threadliste.append(t)
     t.start()    
 
 if constants.USBkeys:

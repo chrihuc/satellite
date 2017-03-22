@@ -33,18 +33,19 @@ class gpio_input_monitoring:
             self.alt[_input] = wert
 
     def monitor(self):
-        counter = 0
-        for _input in _int_adr:
-            wert = GPIO.input(_input)
-            pre_wert = self.alt[_input]
-            dicti = {'Value':wert, 'Name': _int_adr[_input]}  
-            if wert <> pre_wert:
-                server.sendto(str(dicti),(constants.server1,constants.broadPort))               
-            if counter >= 1800:
-                server.sendto(str(dicti),(constants.server1,constants.broadPort))         
-        counter += 1
-        time.sleep(0.1)  
-        if counter >= 1800:
+        while True:
             counter = 0
+            for _input in _int_adr:
+                wert = GPIO.input(_input)
+                pre_wert = self.alt[_input]
+                dicti = {'Value':wert, 'Name': _int_adr[_input]}  
+                if wert <> pre_wert:
+                    server.sendto(str(dicti),(constants.server1,constants.broadPort))               
+                if counter >= 1800:
+                    server.sendto(str(dicti),(constants.server1,constants.broadPort))         
+            counter += 1
+            time.sleep(0.1)  
+            if counter >= 1800:
+                counter = 0
                     
 if  __name__ =='__main__':main()                
