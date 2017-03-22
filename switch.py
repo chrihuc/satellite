@@ -40,7 +40,8 @@ class gpio_input_monitoring:
                 pre_wert = self.alt[_input]
                 dicti = {'Value':wert, 'Name': _int_adr[_input]}  
                 if wert <> pre_wert:
-                    server.sendto(str(dicti),(constants.server1,constants.broadPort))               
+                    server.sendto(str(dicti),(constants.server1,constants.broadPort)) 
+                    self.alt[_input] = wert
                 if counter >= 1800:
                     server.sendto(str(dicti),(constants.server1,constants.broadPort))         
             counter += 1
