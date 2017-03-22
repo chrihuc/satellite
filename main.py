@@ -43,11 +43,7 @@ def git_update():
     sys.exit() 
 
 def send_heartbeat():
-    while run:
-        for t in threadliste:
-            if not t in threading.enumerate():
-                #print t.name
-                sys.exit()        
+    while run:      
         dicti = {}
         dicti['Value'] = str(1)
         dicti['Name'] = 'Hrtbt_' + constants.name
@@ -57,16 +53,23 @@ def send_heartbeat():
                 break
             time.sleep(1)
 
+def supervise_threads():
+    while run:
+        for t in threadliste:
+            if not t in threading.enumerate():
+                print t.name
+                sys.exit()   
+        for i in range(0,60):
+            if not run:
+                break
+            time.sleep(1)                
+
 def take_pic():
     os.system("echo 'im' >/var/www/html/FIFO")           
     
 def take_vid():
     os.system("echo 'ca 1 10' >/var/www/html/FIFO") 
             
-hb = threading.Thread(name="Heartbeat", target=send_heartbeat, args = [])
-threadliste.append(hb)
-hb.start()
-
 if constants.tifo:
     from tf_class import tiFo
     tf = tiFo()
@@ -76,7 +79,10 @@ if constants.PiLEDs:
     leds = LEDs()  
 
 if constants.PiInputs:
-    from switch import tuer_switch
+    from switch import gpio_input_monitoring
+    eingang = gpio_input_monitoring()
+    t = threading.Thread(target=eingang.monitor, args = [])
+    t.start()    
 
 if constants.USBkeys:
     from usb import usb_key
@@ -91,10 +97,13 @@ if constants.zwave:
     from zw_class import zwave
     zwa = zwave()
 
-#tuer = tuer_switch()
-#t = threading.Thread(target=tuer.monitor, args = [])
-#t.start()
+hb = threading.Thread(name="Heartbeat", target=send_heartbeat, args = [])
+threadliste.append(hb)
+hb.start()
 
+sth = threading.Thread(name="sup_thread", target=supervise_threads, args = [])
+threadliste.append(sth)
+sth.start()
 
 while run:
     conn, addr = mySocket.accept()

@@ -30,13 +30,12 @@ def reset_wlan():
     #os.system('sudo killall python')
 
 def main():
-    while 1==1:
+    while True:
         count = 0
         while not ping('192.168.192.1'):
             reset_wlan()
             time.sleep(60)
             count += 1
-            if count > 2:
-                pass
+            if count > 10:
                 os.system('sudo reboot')
         time.sleep(60)

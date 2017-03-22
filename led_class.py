@@ -11,13 +11,12 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-Tuer = 14
 Rot = 2
 Gelb = 3
 Gruen = 4
 
 #GPIO.setup(Tuer, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
+# TODO: a lot change constants...
 GPIO.setup(Rot, GPIO.OUT)
 GPIO.setup(Gelb, GPIO.OUT)
 GPIO.setup(Gruen, GPIO.OUT)
