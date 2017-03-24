@@ -57,7 +57,7 @@ for i in range(0,2):
         init_cfg()
     
 LEDoutputs = {'TuersPi':'Vm1ZIM1SAT1LI01'}   
-GPIO_IN = {'TuerSPIon':('V00FLU1TUE1DI02', 2)}     
+GPIO_IN = {'TuerSPIon':('V00FLU1TUE1DI01', 2)}     
         
 if __name__ == '__main__':
     print name, ownIP
