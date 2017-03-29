@@ -61,7 +61,7 @@ class zwave(object):
             #print dicti
             mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))            
         except:
-            print 'not understood', node.home_id, value.value_id, value.data
+            print 'not understood', node, value.value_id, value.data
 #        print("Hello from value : {}.".format( value ))
     #    home_id: [0xeefad666] id: [72057594093060096] parent_id: [3] label: [Switch] data: [False].
     #    home_id: [0xeefad666] id: [72057594093273218] parent_id: [3] label: [Power] data: [0.0].
