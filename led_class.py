@@ -54,17 +54,12 @@ class LEDs:
         self.f3 = "F3" 
         self.f4 = "F4"
         self.tim = Timer(5, self.schalte, [self.er_rot,self.er_gelb,self.er_gruen])
-    
+        t = threading.Thread(target=self.start, args = [0.25])    
+        t.start()        
+        
     def schalte(self, ro = "Aus", ge = "Aus", gr = "Aus", erinn = False):
         #wenn erinn gesetzt dann springt auf letzte zurueck
         #wenn nicht gesetzt dann bleibt es dauerhaft
-        global rot
-        global gelb
-        global gruen 
-        global er_rot
-        global er_gelb
-        global er_gruen
-        global tim
         self.tim.cancel()
         if not erinn:
             self.er_rot = ro
@@ -79,12 +74,10 @@ class LEDs:
             self.tim.start()
 
     def schalte_rot(self, ro = "Aus"):
-        global rot   
         self.rot = ro
         self.setze_leds(cycle = self.an, value = True)
 
     def schalte_gelb(self, ge = "Aus"):
-        global gelb
         self.gelb = ge
         self.setze_leds(cycle = self.an, value = True)
         
@@ -128,7 +121,7 @@ class LEDs:
         gelb = kwargs.get('yellow',self.aus)
         gruen = kwargs.get('green',self.aus)      
         go_back = kwargs.get('go_back',False) 
-        self.schalte(ro = rot, ge = gelb, gr = gruen, erinn = go_back)
+        self.schalte(ro = rot, ge = gelb, gr = gruen)
     
             
 if  __name__ =='__main__':main()                    

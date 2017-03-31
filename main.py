@@ -6,10 +6,7 @@ import time
 
 import tifo_config
 # TODO: LED Class
-# TODO: network supervision
-# TODO: Tuer switch
 # TODO: USB key
-# TODO: z-wave class
 import zw_config
 import constants
 import sys, os
@@ -130,7 +127,7 @@ while run:
                 result = tf.set_device(data_ev) 
             elif constants.name in constants.LEDoutputs:
                 if data_ev.get('Device') in constants.LEDoutputs[constants.name]:
-                    result = leds.set_device(data_ev)
+                    result = leds.set_device(**data_ev)
             elif constants.zwave and data_ev['Device'] in zw_config.outputs:
                 result = zwa.set_device(data_ev)
             elif constants.raspicam and data_ev['Name'] == 'Take_Pic':
