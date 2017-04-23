@@ -10,12 +10,13 @@ import time
 import openzwave
 from openzwave.option import ZWaveOption
 from openzwave.network import ZWaveNetwork
+from openzwave.controller import ZWaveController
 from louie import dispatcher
 import constants
 import zw_config
 
 device="/dev/ttyACM0"
-log="None"
+log='Debug'#"None"
 
 from socket import socket, AF_INET, SOCK_DGRAM
 
@@ -35,7 +36,8 @@ class zwave(object):
     options.lock()
     
     def louie_network_started(self, network):
-        pass
+        dicti = {'Log':'Z-Wave Network started'}
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         print("Hello from network : I'm started : homeid {:08x} - {} nodes were found.".format(network.home_id, network.nodes_count))
     
     def louie_network_failed(self, network):
@@ -43,17 +45,34 @@ class zwave(object):
         print("Hello from network : can't load :(.")
     
     def louie_network_ready(self, network):
-#        print("Hello from network : I'm ready : {} nodes were found.".format(network.nodes_count))
-#        print("Hello from network : my controller is : {}".format(network.controller))
+        dicti = {'Log':'Z-Wave Network up running'}
+        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         dispatcher.connect(self.louie_node_update, ZWaveNetwork.SIGNAL_NODE)
+        dispatcher.connect(self.louie_scene_message, ZWaveNetwork.SIGNAL_NODE_EVENT)
         dispatcher.connect(self.louie_value_update, ZWaveNetwork.SIGNAL_VALUE)
+        
+        print('Dispatcher connected')
     
+    def louie_scene_message(self, *args, **kwargs):
+        print('scene happening')
+        for count, thing in enumerate(args):
+            print( '{0}. {1}'.format(count, thing))  
+        for name, value in kwargs.items():
+            print( '{0} = {1}'.format(name, value))            
+    
+    def loui_ess_q_comp(self):
+        print('nodes ess queried')
+    
+    def loui_mess_comp(self):
+        print('mess complete')
+    
+
     def louie_node_update(self, network, node):
         pass
         print("Hello from node : {}.".format(node))
     
     def louie_value_update(self, network, node, value):
-        # TODO: catch exception
+        print "value changed"
         try:
             print zw_config.inputs[node.home_id][value.value_id], int(value.data)
             dicti = {'Value':str(int(value.data))}
@@ -61,7 +80,7 @@ class zwave(object):
             #print dicti
             mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))            
         except:
-            print 'not understood', node.home_id, value.value_id, value.data
+            print 'not understood', node, value.value_id, value.data
 #        print("Hello from value : {}.".format( value ))
     #    home_id: [0xeefad666] id: [72057594093060096] parent_id: [3] label: [Switch] data: [False].
     #    home_id: [0xeefad666] id: [72057594093273218] parent_id: [3] label: [Power] data: [0.0].
@@ -77,12 +96,14 @@ class zwave(object):
         dispatcher.connect(self.louie_network_started, ZWaveNetwork.SIGNAL_NETWORK_STARTED)
         dispatcher.connect(self.louie_network_failed, ZWaveNetwork.SIGNAL_NETWORK_FAILED)
         dispatcher.connect(self.louie_network_ready, ZWaveNetwork.SIGNAL_NETWORK_READY)
-        
+        dispatcher.connect(self.louie_scene_message, ZWaveNetwork.SIGNAL_SCENE_EVENT)
+        dispatcher.connect(self.loui_ess_q_comp, ZWaveNetwork.SIGNAL_ESSENTIAL_NODE_QUERIES_COMPLETE)
+        dispatcher.connect(self.loui_mess_comp, ZWaveNetwork.SIGNAL_MSG_COMPLETE)
         self.network.start()
 
         #We wait for the network.
         # print("Waiting for network to become ready : ")
-        for i in range(0,90):
+        for i in range(0,900):
             if self.network.state>=self.network.STATE_READY:
                 print "Network is ready"
                 break
@@ -163,6 +184,6 @@ class zwave(object):
 
 if __name__ == "__main__":
     zwnw = zwave()
-    zwnw.set_device()
+#    zwnw.set_device()
     raw_input('Press key to exit\n') 
     zwnw.end_network()
