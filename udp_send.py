@@ -15,6 +15,7 @@ def bidirekt(request):
     s.connect((constants.server1,constants.biPort))
     s.send(str(data_ev))
     reply = s.recv(1024)
+    print reply
     s.close() 
     isddict, dicti = check_dict(reply)
     if isddict:
@@ -36,6 +37,6 @@ def check_dict(incoming):
         return False, incoming
 
 if __name__ == '__main__':
-    antwort = bidirekt('Settings')
-    print antwort['Status']
+    antwort = bidirekt('Bewohner')
+    print antwort
     

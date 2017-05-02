@@ -353,27 +353,30 @@ class tiFo:
 #        device, rot, gruen, blau, transitiontime, transition=ANSTEIGEND
         device = kwargs.get('Device')
 #        range check kwargs
-        for varia in ['red','green','blue']:
-            if int(kwargs.get(varia)) > 255:
-                kwargs[varia] = 255
-            if int(kwargs.get(varia)) < 0:
-                kwargs[varia] = 0            
-        green = int(kwargs.get('red',0))
-        blue = int(kwargs.get('green',0))
-        red = int(kwargs.get('blue',0))
-
-        transitiontime = kwargs.get('transitiontime')
-        transition = kwargs.get('transition',ANSTEIGEND)
-        proc = kwargs.get('percentage',None)
-
-        red_1 = kwargs.get('blue_1','None')
-        green_1 = kwargs.get('red_1','None')
-        blue_1 = kwargs.get('green_1','None')
-
-        red_2 = int(kwargs.get('blue_2',0))
-        green_2 = int(kwargs.get('red_2',0))
-        blue_2 = int(kwargs.get('green_2',0))        
-
+        try:
+            for varia in ['red','green','blue']:
+                if int(kwargs.get(varia)) > 255:
+                    kwargs[varia] = 255
+                if int(kwargs.get(varia)) < 0:
+                    kwargs[varia] = 0            
+            green = int(kwargs.get('red',0))
+            blue = int(kwargs.get('green',0))
+            red = int(kwargs.get('blue',0))
+    
+            transitiontime = kwargs.get('transitiontime')
+            transition = kwargs.get('transition',ANSTEIGEND)
+            proc = kwargs.get('percentage',None)
+    
+            red_1 = kwargs.get('blue_1','None')
+            green_1 = kwargs.get('red_1','None')
+            blue_1 = kwargs.get('green_1','None')
+    
+            red_2 = int(kwargs.get('blue_2',0))
+            green_2 = int(kwargs.get('red_2',0))
+            blue_2 = int(kwargs.get('green_2',0))        
+        except:
+            print(kwargs)
+            return False
 #        gradient
 #        lauflicht          
         LEDDict = tifo_config.LEDsOut.get(device)
