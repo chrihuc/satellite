@@ -142,6 +142,7 @@ class tiFo:
         device.set_illuminance_callback_threshold('o', thresDown, thresUp)
         dicti = {}
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
+        name = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         dicti['Value'] = str(illuminance)
         dicti['Name'] = name
         #print dicti
@@ -151,6 +152,7 @@ class tiFo:
         illuminance = device.get_illuminance()
         dicti = {}
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
+        name = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         dicti['Value'] = str(illuminance)
         dicti['Name'] = name
         #print dicti
@@ -162,6 +164,7 @@ class tiFo:
         value = device.get_co2_concentration()
         dicti = {}
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
+        name = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         dicti['Value'] = str(value)
         dicti['Name'] = name
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
@@ -172,6 +175,7 @@ class tiFo:
         value = device.get_temperature()
         dicti = {}
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
+        name = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         dicti['Value'] = str(float(value)/100)
         dicti['Name'] = name
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
@@ -187,6 +191,7 @@ class tiFo:
         for wert in bit_list:
             if interrupt_mask & wert > 0:
                 name = tifo_config.IO16i.get(temp_uid).get(port + str(bin(wert)))
+                name = temp_uid + "." + port + str(bin(wert))
                 if name <> None:
                     namelist.append(name)
         if port == 'a':
@@ -214,14 +219,17 @@ class tiFo:
 
     def cb_md(self, device, uid):
         dicti = {'Name':tifo_config.inputs.get(uid),'Value':1}
+        dicti = {'Name':str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]),'Value':1}
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         
     def cb_md_end(self, device, uid):
         dicti = {'Name':tifo_config.inputs.get(uid),'Value':0}
+        dicti = {'Name':str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]),'Value':0}
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))      
 
     def cb_si(self,value, device, uid):
         dicti = {'Name':tifo_config.inputs.get(uid),'Value':value}
+        dicti = {'Name':str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]),'Value':value}
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort)) 
 
     def set_io16_sub(self,cmd,io,value):
