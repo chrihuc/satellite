@@ -50,16 +50,53 @@ def send_heartbeat():
                 break
             time.sleep(1)
 
-def supervise_threads():
+def supervise_threads(tliste):
+#    print tliste
     while run:
-        for t in threadliste:
+        for t in tliste:
             if not t in threading.enumerate():
                 print t.name
-                sys.exit()   
+                sys.exit()
+                exit()
         for i in range(0,60):
             if not run:
                 break
             time.sleep(1)                
+
+def upd_incoming():
+    while run:
+        conn, addr = mySocket.accept()
+        data = conn.recv(1024)
+        if not data:
+            break
+        isdict = False
+        try:
+            data_ev = eval(data)
+            if type(data_ev) is dict:
+                isdict = True
+        except Exception as serr:
+            isdict = False 
+        result = False
+        if isdict:
+            if data_ev.get('Szene')=='Update':
+                conn.send('True')
+                conn.close()             
+                git_update()       
+            elif 'Device' in data_ev:
+    #           TODO threaded commands and stop if new comes in
+                if constants.tifo and data_ev.get('Device') in tifo_config.outputs:
+                    result = tf.set_device(data_ev) 
+                elif constants.name in constants.LEDoutputs:
+                    if data_ev.get('Device') in constants.LEDoutputs[constants.name]:
+                        result = leds.set_device(**data_ev)
+                elif constants.zwave and data_ev['Device'] in zw_config.outputs:
+                    result = zwa.set_device(data_ev)
+                elif constants.raspicam and data_ev['Name'] == 'Take_Pic':
+                    take_pic()
+                elif constants.raspicam and data_ev['Name'] == 'Record_Video':
+                    take_vid()                
+        conn.send(str(result))
+        conn.close()  
 
 def take_pic():
     os.system("echo 'im' >/var/www/html/FIFO")           
@@ -84,7 +121,11 @@ if constants.PiInputs:
 
 if constants.USBkeys:
     from usb import usb_key
-
+    keys = usb_key()
+    t = threading.Thread(name='usb',target=keys.monitor, args = [])
+    threadliste.append(t)
+    t.start() 
+    
 if constants.wifi:
     import net_sup
     wifi_sup = threading.Thread(name='wifi', target=net_sup.main, args=[])
@@ -94,45 +135,18 @@ if constants.wifi:
 if constants.zwave:
     from zw_class import zwave
     zwa = zwave()
+    zw_sup = threading.Thread(name='ZWave', target=zwa.start, args=[])
+    threadliste.append(zw_sup)
+    zw_sup.start()
 
 hb = threading.Thread(name="Heartbeat", target=send_heartbeat, args = [])
 threadliste.append(hb)
 hb.start()
 
-sth = threading.Thread(name="sup_thread", target=supervise_threads, args = [])
-threadliste.append(sth)
-sth.start()
+ud = threading.Thread(name="UDP Input", target=upd_incoming, args = [])
+threadliste.append(ud)
+ud.start()
 
-while run:
-    conn, addr = mySocket.accept()
-    data = conn.recv(1024)
-    if not data:
-        break
-    isdict = False
-    try:
-        data_ev = eval(data)
-        if type(data_ev) is dict:
-            isdict = True
-    except Exception as serr:
-        isdict = False 
-    result = False
-    if isdict:
-        if data_ev.get('Szene')=='Update':
-            conn.send('True')
-            conn.close()             
-            git_update()       
-        elif 'Device' in data_ev:
-#           TODO threaded commands and stop if new comes in
-            if constants.tifo and data_ev.get('Device') in tifo_config.outputs:
-                result = tf.set_device(data_ev) 
-            elif constants.name in constants.LEDoutputs:
-                if data_ev.get('Device') in constants.LEDoutputs[constants.name]:
-                    result = leds.set_device(**data_ev)
-            elif constants.zwave and data_ev['Device'] in zw_config.outputs:
-                result = zwa.set_device(data_ev)
-            elif constants.raspicam and data_ev['Name'] == 'Take_Pic':
-                take_pic()
-            elif constants.raspicam and data_ev['Name'] == 'Record_Video':
-                take_vid()                
-    conn.send(str(result))
-    conn.close()           
+sth = threading.Thread(name="sup_thread", target=supervise_threads, args = [threadliste])
+threadliste.append(sth)
+sth.start()   

@@ -88,6 +88,9 @@ class zwave(object):
     #   value.label = switch
 
     def __init__(self):
+        pass
+    
+    def start(self):
         #Create a network object
         self.network = ZWaveNetwork(self.options, autostart=False)
         

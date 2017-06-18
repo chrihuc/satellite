@@ -9,8 +9,6 @@ import constants
 
 
 server = socket( AF_INET, SOCK_DGRAM )
-SERVER_IP_1   = constants.server1
-SERVER_PORT = 5000
 
 
 device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
@@ -32,8 +30,8 @@ def write_upd_list(liste):
         wr.writerow(liste)  
 
 def send_to_server(devce, value):
-    dicti = {'USB_Stick': devce, 'Value': value}
-    print dicti    
+    dicti = {'Name': 'USB.'+str(devce), 'Value': value}
+    server.sendto(str(dicti) ,(constants.server1,constants.broadPort))  
 
 usb_devs = check_att_sticks()
 
@@ -44,6 +42,10 @@ try:
         saved_devs = saved_devs[0]
         new_devs = list(set(usb_devs) - set(saved_devs))
         removed_devs = list(set(saved_devs) - set(usb_devs))
+        for devce in new_devs:
+            send_to_server(devce, 1)
+        for devce in removed_devs:
+            send_to_server(devce, 0)
         print 'new ', new_devs
         print 'removed ', removed_devs
 except:
