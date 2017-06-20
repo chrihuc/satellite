@@ -589,11 +589,10 @@ class tiFo:
             if device_identifier == BrickletPTC.DEVICE_IDENTIFIER:
                 self.ptc.append(BrickletPTC(uid, self.ipcon))
                 temp_uid = str(self.ptc[-1].get_identity()[1]) +"."+ str(self.ptc[-1].get_identity()[0])
-                if tifo_config.inputs.get(temp_uid) <> None:
-                    found  = True  
-                    thread_pt_ = Timer(5, self.thread_pt, [self.ptc[-1]])
-                    thread_pt_.start()   
-                    self.threadliste.append(thread_pt_)
+                found  = True  
+                thread_pt_ = Timer(5, self.thread_pt, [self.ptc[-1]])
+                thread_pt_.start()   
+                self.threadliste.append(thread_pt_)
             
             if device_identifier == BrickMaster.DEVICE_IDENTIFIER:   
                 self.master.append(BrickMaster(uid, self.ipcon))
