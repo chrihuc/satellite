@@ -22,9 +22,11 @@ def db_out(*args):
         print(args)
 
 def check_att_sticks():
+#    global usb_devs
     for device in context.list_devices(MAJOR='8'):#subsystem='block', DEVTYPE='partition'):
         if device.device_type != None:#'scsi_device':
             usb_devs.append(device.get('ID_SERIAL_SHORT'))
+            db_out('found', device.get('ID_SERIAL_SHORT'))
     
     return list(set(usb_devs))
 
@@ -74,7 +76,8 @@ class usb_key:
 
     def monitor(self):
         for device in iter(monitor.poll, None):
-            devce = device.get('ID_SERIAL_SHORT')         
+            devce = device.get('ID_SERIAL_SHORT')
+            db_out('change',devce)
             if device.action =="remove":
                 send_to_server(devce, 0)
                 usb_devs = check_att_sticks()
