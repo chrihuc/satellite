@@ -55,7 +55,8 @@ for i in range(0,2):
         raspicam = config.getboolean('Main', 'RasPiCam')
     except:
         init_cfg()
-    
+
+debug = False
 LEDoutputs = {'KellerSPi':'Vm1ZIM1SAT1LI01'}   
 GPIO_IN = {'TuerSPIon':('V00FLU1TUE1DI01', 2)}     
         

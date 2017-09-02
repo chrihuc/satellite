@@ -17,6 +17,10 @@ usb_devs = []
 
 context = pyudev.Context()
 
+def db_out(text):
+    if constants.debug:
+        print(str(text))
+
 def check_att_sticks():
     for device in context.list_devices(MAJOR='8'):#subsystem='block', DEVTYPE='partition'):
         if device.device_type != None:#'scsi_device':
@@ -34,6 +38,7 @@ def send_to_server(devce, value):
     server.sendto(str(dicti) ,(constants.server1,constants.broadPort))  
 
 usb_devs = check_att_sticks()
+db_out(usb_devs)
 
 try:
     with open('usb_devs.csv', 'rb') as f:
@@ -56,6 +61,7 @@ monitor.start()
 monitor.filter_by('usb', 'usb_device')
 
 write_upd_list(usb_devs)
+db_out(usb_devs)
 
 def main():
     keys = usb_key()
@@ -73,11 +79,15 @@ class usb_key:
                 send_to_server(devce, 0)
                 usb_devs = check_att_sticks()
                 write_upd_list(usb_devs)
+                db_out('removed')
+                db_out(usb_devs)
                 
             if device.action =="add": # and serial <> "":                
                 send_to_server(devce, 1)
                 usb_devs = check_att_sticks()
                 write_upd_list(usb_devs)
+                db_out('add')
+                db_out(usb_devs)                
 
 if __name__ == '__main__':
     main()        

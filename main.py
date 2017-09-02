@@ -25,10 +25,19 @@ threadliste = []
 
 run = True
 
+if sys.argv:
+    if sys.argv[0] == 'debug':
+        print('debug on')
+        constants.debug = True
+
 if constants.tifo:
     os.system("sudo service brickd stop")
     os.system("sudo service brickd start")
     time.sleep(2)
+
+def db_out(text):
+    if constants.debug:
+        print(text)
 
 def git_update():
     global run
@@ -121,6 +130,7 @@ if constants.PiInputs:
 
 if constants.USBkeys:
     from usb import usb_key
+    db_out('USB active')
     keys = usb_key()
     t = threading.Thread(name='usb',target=keys.monitor, args = [])
     threadliste.append(t)

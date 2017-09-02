@@ -580,6 +580,7 @@ class tiFo:
             if device_identifier == BrickletSoundIntensity.DEVICE_IDENTIFIER:   
                 self.si.append(BrickletSoundIntensity(uid, self.ipcon))
                 temp_uid = str(self.si[-1].get_identity()[1]) +"."+ str(self.si[-1].get_identity()[0])
+# TODO: remove all ifs
                 if tifo_config.inputs.get(temp_uid) <> None:
                     found  = True             
                     self.si[-1].set_debounce_period(tifo_config.SoundInt.get(temp_uid)[0])                
