@@ -24,6 +24,7 @@ def db_out(*args):
 def check_att_sticks():
 #    global usb_devs
     for device in context.list_devices(MAJOR='8'):#subsystem='block', DEVTYPE='partition'):
+        db_out('iterating', device.get('ID_SERIAL_SHORT'))
         if device.device_type != None:#'scsi_device':
             usb_devs.append(device.get('ID_SERIAL_SHORT'))
             db_out('found', device.get('ID_SERIAL_SHORT'))
