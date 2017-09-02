@@ -17,9 +17,9 @@ usb_devs = []
 
 context = pyudev.Context()
 
-def db_out(text):
+def db_out(*args):
     if constants.debug:
-        print(str(text))
+        print(args)
 
 def check_att_sticks():
     for device in context.list_devices(MAJOR='8'):#subsystem='block', DEVTYPE='partition'):
@@ -51,8 +51,8 @@ try:
             send_to_server(devce, 1)
         for devce in removed_devs:
             send_to_server(devce, 0)
-        print 'new ', new_devs
-        print 'removed ', removed_devs
+        db_out('new ', new_devs)
+        db_out('removed ', removed_devs)
 except:
     pass
 
@@ -79,15 +79,13 @@ class usb_key:
                 send_to_server(devce, 0)
                 usb_devs = check_att_sticks()
                 write_upd_list(usb_devs)
-                db_out('removed')
-                db_out(usb_devs)
+                db_out('removed',usb_devs)
                 
             if device.action =="add": # and serial <> "":                
                 send_to_server(devce, 1)
                 usb_devs = check_att_sticks()
                 write_upd_list(usb_devs)
-                db_out('add')
-                db_out(usb_devs)                
+                db_out('add',usb_devs)                
 
 if __name__ == '__main__':
     main()        

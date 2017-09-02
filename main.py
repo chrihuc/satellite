@@ -27,7 +27,7 @@ run = True
 
 if sys.argv:
     print sys.argv
-    if sys.argv[0] == 'debug':
+    if sys.argv[1] == 'debug':
         print('debug on')
         constants.debug = True
 
