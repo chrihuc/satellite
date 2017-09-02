@@ -92,4 +92,5 @@ class usb_key:
                 db_out('add',usb_devs)                
 
 if __name__ == '__main__':
+    constants.debug = True
     main()        
