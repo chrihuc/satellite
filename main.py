@@ -26,6 +26,7 @@ threadliste = []
 run = True
 
 if sys.argv:
+    print sys.argv
     if sys.argv[0] == 'debug':
         print('debug on')
         constants.debug = True
