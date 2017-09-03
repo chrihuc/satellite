@@ -23,11 +23,11 @@ GPIO.setup(Gruen, GPIO.OUT)
 
 def main():
     inp = LEDs()
-    inp.schalte("F1","F2","F1")  
+    inp.schalte("F1","F2","F3")  
     t = threading.Thread(target=inp.start, args = [0.25])    
     t.start()
-    time.sleep(10)
-    inp.schalte("Aus","An","F2",erinn = True) 
+#    time.sleep(10)
+#    inp.schalte("Aus","An","F2",erinn = True) 
    
 '''
     modes for the leds:
