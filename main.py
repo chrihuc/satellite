@@ -26,7 +26,7 @@ threadliste = []
 run = True
 
 if sys.argv:
-    if sys.argv[1] == 'debug':
+    if 'debig' in sys.argv:
         print('debug on')
         constants.debug = True
 
@@ -148,6 +148,13 @@ if constants.zwave:
     zw_sup = threading.Thread(name='ZWave', target=zwa.start, args=[])
     threadliste.append(zw_sup)
     zw_sup.start()
+
+if constants.enoc:
+    from enocean_class import Encocean_Sat
+    enc = Encocean_Sat()
+    enc_sup = threading.Thread(name='Enocean', target=enc.monitor, args=[])
+    threadliste.append(enc_sup)
+    enc_sup.start()
 
 hb = threading.Thread(name="Heartbeat", target=send_heartbeat, args = [])
 threadliste.append(hb)

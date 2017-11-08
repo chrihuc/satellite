@@ -61,7 +61,8 @@ class zwave(object):
             print( '{0} = {1}'.format(name, value))            
     
     def loui_ess_q_comp(self):
-        print('nodes ess queried')
+        pass
+#        print('nodes ess queried')
     
     def loui_mess_comp(self):
         print('mess complete')
@@ -187,6 +188,9 @@ class zwave(object):
 
 if __name__ == "__main__":
     zwnw = zwave()
+    zwnw.start()
 #    zwnw.set_device()
+    #time.sleep(10)
+    zwnw.network.nodes[4].request_all_config_params()
     raw_input('Press key to exit\n') 
     zwnw.end_network()
