@@ -76,7 +76,7 @@ class zwave(object):
         print "value changed"
         try:
             print zw_config.inputs[node.home_id][value.value_id], int(value.data)
-            dicti = {'Value':str(int(value.data))}
+            dicti = {'Value': 'ZWave.' + str(int(value.data))}
             dicti['Name'] = zw_config.inputs[node.home_id][value.value_id]
             #print dicti
             mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))            

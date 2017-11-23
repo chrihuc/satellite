@@ -144,7 +144,7 @@ class tiFo:
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
         name = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         dicti['Value'] = str(illuminance)
-        dicti['Name'] = name
+        dicti['Name'] = 'TiFo.' + name
         #print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         
@@ -154,7 +154,7 @@ class tiFo:
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
         name = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         dicti['Value'] = str(illuminance)
-        dicti['Name'] = name
+        dicti['Name'] = 'TiFo.' + name
         #print dicti
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         thread_cb_amb = Timer(60, self.thread_ambLight, [device])
@@ -166,7 +166,7 @@ class tiFo:
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
         name = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         dicti['Value'] = str(value)
-        dicti['Name'] = name
+        dicti['Name'] = 'TiFo.' + name
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         thread_co2_ = Timer(60, self.thread_CO2, [device])
         thread_co2_.start()
@@ -177,7 +177,7 @@ class tiFo:
         name = tifo_config.inputs.get(str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]))
         name = str(device.get_identity()[1]) +"."+ str(device.get_identity()[0])
         dicti['Value'] = str(float(value)/100)
-        dicti['Name'] = name
+        dicti['Name'] = 'TiFo.' + name
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         thread_pt_ = Timer(60, self.thread_pt, [device])
         thread_pt_.start()
@@ -214,22 +214,22 @@ class tiFo:
             self.io16list.setTime(device,interrupt_mask, port)
         #print dicti
         for name in namelist:
-            dicti['Name'] = name
+            dicti['Name'] = 'TiFo.' + name
             mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))       
 
     def cb_md(self, device, uid):
         dicti = {'Name':tifo_config.inputs.get(uid),'Value':1}
-        dicti = {'Name':str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]),'Value':1}
+        dicti = {'Name':'TiFo.' + str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]),'Value':1}
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         
     def cb_md_end(self, device, uid):
         dicti = {'Name':tifo_config.inputs.get(uid),'Value':0}
-        dicti = {'Name':str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]),'Value':0}
+        dicti = {'Name':'TiFo.' + str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]),'Value':0}
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))      
 
     def cb_si(self,value, device, uid):
         dicti = {'Name':tifo_config.inputs.get(uid),'Value':value}
-        dicti = {'Name':str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]),'Value':value}
+        dicti = {'Name':'TiFo.' + str(device.get_identity()[1]) +"."+ str(device.get_identity()[0]),'Value':value}
         mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort)) 
 
     def set_io16_sub(self,cmd,io,value):

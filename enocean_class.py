@@ -14,6 +14,8 @@ import traceback
 
 import udp_send
 
+#sudo pip install git+https://github.com/chrihuc/enocean.git
+
 try:
     import queue
 except ImportError:

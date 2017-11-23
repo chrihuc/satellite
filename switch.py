@@ -38,7 +38,7 @@ class gpio_input_monitoring:
             for _input in _int_adr:
                 wert = GPIO.input(_input)
                 pre_wert = self.alt[_input]
-                dicti = {'Value':wert, 'Name': _int_adr[_input]}  
+                dicti = {'Value':wert, 'Name': 'GPIO.' + constants.name + '.' + _input}  
                 if wert <> pre_wert:
                     server.sendto(str(dicti),(constants.server1,constants.broadPort)) 
                     self.alt[_input] = wert

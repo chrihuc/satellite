@@ -52,7 +52,7 @@ def send_heartbeat():
     while run:      
         dicti = {}
         dicti['Value'] = str(1)
-        dicti['Name'] = 'Hrtbt_' + constants.name
+        dicti['Name'] = 'Hrtbt.' + constants.name
         hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))
         for i in range(0,60):
             if not run:
