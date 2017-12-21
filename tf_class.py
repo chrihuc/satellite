@@ -546,20 +546,17 @@ class tiFo:
                 
                 self.al[-1].register_callback(self.al[-1].CALLBACK_ILLUMINANCE_REACHED, partial( self.cb_ambLight,  device=args))
                 temp_uid = str(self.al[-1].get_identity()[1]) +"."+ str(self.al[-1].get_identity()[0])               
-                                
-                if tifo_config.inputs.get(temp_uid) <> None:
-                    found  = True
-                    thread_cb_amb = Timer(60, self.thread_ambLight, [self.al[-1]])
-                    thread_cb_amb.start() 
+                found  = True  
+                thread_cb_amb = Timer(60, self.thread_ambLight, [self.al[-1]])
+                thread_cb_amb.start() 
 
             if device_identifier == BrickletCO2.DEVICE_IDENTIFIER:
                 self.co2.append(BrickletCO2(uid, self.ipcon))
                 temp_uid = str(self.co2[-1].get_identity()[1]) +"."+ str(self.co2[-1].get_identity()[0])
-                if tifo_config.inputs.get(temp_uid) <> None:
-                    found  = True  
-                    thread_co2_ = Timer(5, self.thread_CO2, [self.co2[-1]])
-                    thread_co2_.start()    
-                    self.threadliste.append(thread_co2_)
+                found  = True  
+                thread_co2_ = Timer(5, self.thread_CO2, [self.co2[-1]])
+                thread_co2_.start()    
+                self.threadliste.append(thread_co2_)
 
             if device_identifier == BrickletDualRelay.DEVICE_IDENTIFIER:
                 self.drb.append(BrickletDualRelay(uid, self.ipcon))
@@ -574,18 +571,16 @@ class tiFo:
                 temp_uid = str(self.md[-1].get_identity()[1]) +"."+ str(self.md[-1].get_identity()[0])
                 self.md[-1].register_callback(self.md[-1].CALLBACK_MOTION_DETECTED, partial( self.cb_md, device = self.md[-1], uid = temp_uid ))  
                 self.md[-1].register_callback(self.md[-1].CALLBACK_DETECTION_CYCLE_ENDED, partial( self.cb_md_end, device = self.md[-1], uid = temp_uid ))
-                if tifo_config.inputs.get(temp_uid) <> None:
-                    found  = True                
+                found  = True                
             
             if device_identifier == BrickletSoundIntensity.DEVICE_IDENTIFIER:   
                 self.si.append(BrickletSoundIntensity(uid, self.ipcon))
                 temp_uid = str(self.si[-1].get_identity()[1]) +"."+ str(self.si[-1].get_identity()[0])
 # TODO: remove all ifs
-                if tifo_config.inputs.get(temp_uid) <> None:
-                    found  = True             
-                    self.si[-1].set_debounce_period(tifo_config.SoundInt.get(temp_uid)[0])                
-                    self.si[-1].register_callback(self.si[-1].CALLBACK_INTENSITY_REACHED, partial( self.cb_si, device = self.si[-1], uid = temp_uid ))  
-                    self.si[-1].set_intensity_callback_threshold(tifo_config.SoundInt.get(temp_uid)[1], tifo_config.SoundInt.get(temp_uid)[2], tifo_config.SoundInt.get(temp_uid)[3])                    
+                found  = True             
+                self.si[-1].set_debounce_period(1000)                
+                self.si[-1].register_callback(self.si[-1].CALLBACK_INTENSITY_REACHED, partial( self.cb_si, device = self.si[-1], uid = temp_uid ))  
+                self.si[-1].set_intensity_callback_threshold('>', 200, 0)                    
             
             if device_identifier == BrickletPTC.DEVICE_IDENTIFIER:
                 self.ptc.append(BrickletPTC(uid, self.ipcon))
