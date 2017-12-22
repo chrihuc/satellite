@@ -113,9 +113,15 @@ def take_pic():
 def take_vid():
     os.system("echo 'ca 1 10' >/var/www/html/FIFO") 
             
+#if constants.tifo:
+#    from tf_class import tiFo
+#    tf = tiFo()
+
 if constants.tifo:
-    from tf_class import tiFo
-    tf = tiFo()
+    from tf_connection import TiFo
+    tf = TiFo()
+    tf.main()
+
 
 if constants.PiLEDs:
     from led_class import LEDs
