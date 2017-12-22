@@ -60,6 +60,7 @@ for i in range(0,2):
 
 debug = False
 debug_level = 10
+debug_text = ''
 run = True
 LEDoutputs = {'KellerSPi':'Vm1ZIM1SAT1LI01'}   
 GPIO_IN = {'TuerSPIon':('V00FLU1TUE1DI01', 2)}     
