@@ -964,7 +964,7 @@ while 1 :
 	now_sec = now.second%10
 	next_sec = 11  #Guaranteed next greater than 9
 	if now_sec != next_sec:
-		disp.         (now.hour,now.minute,now.second)
+		disp.Dis_showtime(now.hour,now.minute,now.second)
 		next_sec = now.second%10
 		
 		
