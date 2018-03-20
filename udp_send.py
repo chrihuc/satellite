@@ -17,7 +17,7 @@ def bidirekt(request, key=''):
     s.connect((constants.server1,constants.biPort))
     s.send(str(data_ev))
     reply = s.recv(4096)
-    print reply
+#    print reply
     s.close() 
     isddict, dicti = check_dict(reply)
     if isddict:
@@ -42,6 +42,8 @@ def check_dict(incoming):
         return False, incoming
 
 if __name__ == '__main__':
-    antwort = bidirekt('Inputs', key='')
-    print antwort
+    antwort = bidirekt('Inputs')
+#    print antwort
+#    _, antwort = check_dict(bidirekt('Inputs'))
+    print antwort['A00TER1GEN1TE01']
     
