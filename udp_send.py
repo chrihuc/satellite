@@ -11,12 +11,12 @@ from socket import AF_INET, SOCK_DGRAM
 
 server = socket.socket( AF_INET, SOCK_DGRAM )
 
-def bidirekt(request):
+def bidirekt(request, key=''):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    data_ev = {'Request':request}
+    data_ev = {'Request':request, 'Key':key}
     s.connect((constants.server1,constants.biPort))
     s.send(str(data_ev))
-    reply = s.recv(1024)
+    reply = s.recv(4096)
     print reply
     s.close() 
     isddict, dicti = check_dict(reply)
@@ -42,6 +42,6 @@ def check_dict(incoming):
         return False, incoming
 
 if __name__ == '__main__':
-    antwort = bidirekt('Bewohner')
+    antwort = bidirekt('Inputs', key='')
     print antwort
     
