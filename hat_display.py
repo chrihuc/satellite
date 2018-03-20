@@ -26,8 +26,8 @@ disp.Dis_Clear_full()
 
 #String
 #print '------------Show string------------'
-#disp.Dis_String(0, 10, "SHOW TIME : ",16)
-#disp.Dis_String(0, 26, "I am an electronic paper display",12)
+disp.Dis_String(0, 10, "SHOW TIME : ",16)
+disp.Dis_String(0, 26, "I am an electronic paper display",12)
 
 
 #time
