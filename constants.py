@@ -9,7 +9,7 @@ import socket
 
 own_ip = socket.gethostbyname(socket.gethostname())
 
-cfg_main={'Name':'Satellite1','Server1':'192.168.192.10','broadPort':5000,'biPort':5005,
+cfg_main={'Name':'Satellite1','Server1':'192.168.192.10','broadPort':5000,'biPort':5050,
           'ownIP':own_ip,
           'tifo':False,
           'OS':False,       # Operator Station
