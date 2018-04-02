@@ -1,6 +1,6 @@
 #!/bin/sh
 exec 2>&1
-cd /home/pi/satellite/
+cd /home/pi/sat/
 exec setuidgid root sh -c '
   exec /usr/bin/python /home/pi/sat/main.py
 '
