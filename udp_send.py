@@ -83,4 +83,4 @@ if __name__ == '__main__':
     antwort = bidirekt_new('Inputs')
 #    print antwort
 #    _, antwort = check_dict(bidirekt('Inputs'))
-    print antwort['V00WOH1RUM1TE01']
+    print antwort['V00KUE1RUM1TE02']
