@@ -42,7 +42,6 @@ def bidirekt(request, key=''):
     s.connect((constants.server1,constants.biPort))
     s.send(str(data_ev))
     reply = recv_msg(s)#s.recv(4096)
-    print reply
     s.close()
     isddict, dicti = check_dict(reply)
     if isddict:
@@ -56,7 +55,6 @@ def bidirekt_new(request, key=''):
     s.connect((constants.server1,5050))
     send_msg(s, str(data_ev))
     reply = recv_msg(s)#s.recv(4096)
-    print reply
     s.close()
     isddict, dicti = check_dict(reply)
     if isddict:
