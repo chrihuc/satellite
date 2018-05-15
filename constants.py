@@ -22,6 +22,7 @@ cfg_main={'Name':'Satellite1','Server1':'192.168.192.10','broadPort':5000,'biPor
           'Z-wave Path':'/home/pi/python-openzwave/openzwave/config',
           'RasPiCam':False,
           'ePaperHat':False}
+cfg_mqtt = {'Username': '', 'Password': '', 'Server': '192.168.192.10'}
 
 config = ConfigParser.RawConfigParser()
 
@@ -35,6 +36,11 @@ def init_cfg():
             else:
                 value = cfg_main.get(cfg)
             config.set('Main', cfg, value)
+    if not config.has_section('MQTT'):
+        config.add_section('MQTT')
+    for cfg in cfg_mqtt:
+        if not config.has_option('MQTT', cfg):
+            config.set('MQTT', cfg, cfg_mqtt.get(cfg))
     with open('satellite.cfg', 'wb') as configfile:
         config.write(configfile)
 
@@ -57,6 +63,10 @@ for i in range(0,2):
         zwpath = config.get('Main', 'Z-wave Path')
         raspicam = config.getboolean('Main', 'RasPiCam')
         ePaperHat = config.getboolean('Main', 'ePaperHat')
+        class mqtt_:
+            user = config.get('MQTT', 'Username')
+            password = config.get('MQTT', 'Password')
+            server = config.get('MQTT', 'Server')
     except:
         init_cfg()
 
