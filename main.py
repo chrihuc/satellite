@@ -164,6 +164,9 @@ if constants.enoc:
 
 if constants.ePaperHat:
     import hat_display
+    paphat = threading.Thread(name='PaperHat', target=hat_display.main, args=[])
+    threadliste.append(paphat)
+    paphat.start()
 
 hb = threading.Thread(name="Heartbeat", target=send_heartbeat, args = [])
 threadliste.append(hb)

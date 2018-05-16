@@ -84,7 +84,7 @@ class usb_key:
     def monitor(self):
         for device in iter(self.usb_monitor.poll, None):
             devce = device.get('ID_SERIAL_SHORT')
-            db_out('change',devce)
+            db_out('change',devce, device.action)
             client.publish("debug/dispi/usb", devce, qos=0)
             if device.action =="remove":
                 self.send_to_server(devce, 0)
