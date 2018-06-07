@@ -5,9 +5,9 @@
 """
 
 from display import epd2in13
-import Image
-import ImageDraw
-import ImageFont
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 
 import udp_send
 import time
