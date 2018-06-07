@@ -43,10 +43,10 @@ class usb_key:
                 saved_devs = saved_devs[0]
                 new_devs = list(set(self.usb_devs) - set(saved_devs))
                 removed_devs = list(set(saved_devs) - set(self.usb_devs))
-                for devce in new_devs:
-                    self.send_to_server(devce, 1)
-                for devce in removed_devs:
-                    self.send_to_server(devce, 0)
+#                for devce in new_devs:
+#                    self.send_to_server(devce, 1)
+#                for devce in removed_devs:
+#                    self.send_to_server(devce, 0)
                 db_out('new ', new_devs)
                 db_out('removed ', removed_devs)
         except:

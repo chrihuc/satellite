@@ -1,50 +1,39 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Sun Mar 18 20:15:21 2018
-
 @author: christoph
 """
 
-import time
-import spidev as SPI
-import EPD_driver
-import datetime
+from display import epd2in13
+import Image
+import ImageDraw
+import ImageFont
+
 import udp_send
+import time
 
-EPD2X9 = 0
-EPD02X13 = 1
-EPD1X54 = 0
+epd = epd2in13.EPD()
+epd.init(epd.lut_full_update)
 
-bus = 0
-device = 0
-DELAYTIME = 1.5
+image = Image.new('1', (epd2in13.EPD_WIDTH, epd2in13.EPD_HEIGHT), 255)  # 255: clear the frame
+draw = ImageDraw.Draw(image)
+fontTime = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 16)
+fontStatus = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 18)
 
-disp = EPD_driver.EPD_driver(spi=SPI.SpiDev(bus, device))
+    
 
 def main():
-    
-    disp.Dis_Clear_full()
-    disp.Dis_Clear_part()
-    
-    #disp.Dis_String(0, 10, "SHOW TIME : ",16)
-    #disp.Dis_String(0, 26, "I am an electronic paper display",12)
-    
-    #time
-    print '------------show time------------'
-    while 1 :
-        now = datetime.datetime.now()
-    #	now_sec = now.second%10
-    #	next_sec = 11  #Guaranteed next greater than 9
-    #	if now_sec != next_sec:
-    #		disp.Dis_showtime(now.hour,now.minute,now.second)
-    #		next_sec = now.second%10
+    while 1:
+        draw = ImageDraw.Draw(image)
         inp_dict = udp_send.bidirekt_new('Inputs')
         set_dict = udp_send.bidirekt_new('Settings')
-        disp.Dis_showtime(now.hour,now.minute,0)
-        disp.Dis_String(10, 26, 'Aussentemperatur: ' + inp_dict['A00TER1GEN1TE01'] + " degC  ",16)
-        disp.Dis_String(10, 42, 'Innentemperatur : ' + inp_dict['V00KUE1RUM1TE02'] + " degC  ",16)
-        disp.Dis_String(10, 58, 'Innentemperatur : ' + inp_dict['V00WOH1RUM1TE01'] + " degC  ",16)
-        disp.Dis_String(10, 74, 'Status          : ' + set_dict['Status'] + '       ',16)
-        #disp.Dis_String(10, 90, 'Status          : ' + set_dict['Status'],16)
-        time.sleep(60)
+
+        draw.text((10, 0), time.strftime('%M:%S'), font = fontTime, fill = 0)
+        
+        draw.text((10, 26), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " °C", font = fontTime, fill = 0)
+        draw.text((10, 42), 'Innen : ' + inp_dict['V00KUE1RUM1TE02'] + " °C " + inp_dict['V00WOH1RUM1TE01'] + " °C", font = fontTime, fill = 0)
+        #draw.text((10, 58), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " degC ", font = fontTime, fill = 0)
+        draw.text((10, 74), 'Status: ' + set_dict['Status'], font = fontStatus, fill = 0)
+        #draw.text((10, 90), 'Status: ' + set_dict['Status'], font = fontTime, fill = 0)
+
+        time.sleep(60)        
