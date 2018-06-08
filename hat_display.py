@@ -15,7 +15,7 @@ import time
 epd = epd2in13.EPD()
 epd.init(epd.lut_full_update)
 
-image = Image.new('1', (epd2in13.EPD_WIDTH, epd2in13.EPD_HEIGHT), 255)  # 255: clear the frame
+image = Image.new('1', (epd2in13.EPD_HEIGHT, epd2in13.EPD_WIDTH), 255)  # 255: clear the frame
 draw = ImageDraw.Draw(image)
 image_width, image_height  = image.size
 draw.rectangle((0, 0, image_width, image_height), fill = 255)
