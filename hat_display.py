@@ -17,6 +17,7 @@ epd.init(epd.lut_full_update)
 
 image = Image.new('1', (epd2in13.EPD_WIDTH, epd2in13.EPD_HEIGHT), 255)  # 255: clear the frame
 draw = ImageDraw.Draw(image)
+draw.rectangle((0, 10, 128, 30), fill = 0)
 fontTime = ImageFont.truetype('./display/FreeMonoBold.ttf', 16)
 fontStatus = ImageFont.truetype('./display/FreeMonoBold.ttf', 18)
 
