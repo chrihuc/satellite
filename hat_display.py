@@ -42,6 +42,7 @@ def main():
         #draw.text((10, 58), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " degC ", font = fontTime, fill = 0)
         draw.text((10, 74), 'Status: ' + set_dict['Status'], font = fontStatus, fill = 0)
         #draw.text((10, 90), 'Status: ' + set_dict['Status'], font = fontTime, fill = 0)
+        epd.set_frame_memory(image, 0, 0)
         epd.display_frame()
         
         time.sleep(60)        
