@@ -14,6 +14,7 @@ import time
 
 epd = epd2in13.EPD()
 epd.init(epd.lut_full_update)
+epd.init(epd.lut_partial_update)
 fontTime = ImageFont.truetype('./display/FreeMonoBold.ttf', 16)
 fontStatus = ImageFont.truetype('./display/FreeMonoBold.ttf', 18)
 epd.delay_ms(2000)
