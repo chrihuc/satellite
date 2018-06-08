@@ -20,6 +20,8 @@ draw = ImageDraw.Draw(image)
 fontTime = ImageFont.truetype('./display/FreeMonoBold.ttf', 16)
 fontStatus = ImageFont.truetype('./display/FreeMonoBold.ttf', 18)
 
+epd.clear_frame_memory(0xFF)
+epd.set_frame_memory(image, 0, 0)
 epd.set_frame_memory(image, 0, 0)
 epd.display_frame()
 epd.set_frame_memory(image, 0, 0)
