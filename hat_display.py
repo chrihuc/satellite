@@ -36,7 +36,7 @@ def main():
         inp_dict = udp_send.bidirekt_new('Inputs')
         set_dict = udp_send.bidirekt_new('Settings')
         draw.rectangle((0, 0, image_width, image_height), fill = 255)
-        draw.text((0, 0), time.strftime('%M:%S'), font = fontTime, fill = 0)
+        draw.text((0, 0), time.strftime('%H:%M'), font = fontTime, fill = 0)
         
         draw.text((0, 26), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " °C", font = fontTime, fill = 0)
         draw.text((0, 42), 'Innen : ' + inp_dict['V00KUE1RUM1TE02'] + " °C " + inp_dict['V00WOH1RUM1TE01'] + " °C", font = fontTime, fill = 0)
