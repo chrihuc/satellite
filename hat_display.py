@@ -28,20 +28,20 @@ epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
 epd.display_frame()
 epd.delay_ms(2000)
 epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-        
+image_width, image_height  = image.size
 
 def main():
     while 1:
         #draw = ImageDraw.Draw(image)
         inp_dict = udp_send.bidirekt_new('Inputs')
         set_dict = udp_send.bidirekt_new('Settings')
-
-        draw.text((10, 0), time.strftime('%M:%S'), font = fontTime, fill = 0)
+        draw.rectangle((0, 0, image_width, image_height), fill = 255)
+        draw.text((0, 0), time.strftime('%M:%S'), font = fontTime, fill = 0)
         
-        draw.text((10, 26), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " °C", font = fontTime, fill = 0)
-        draw.text((10, 42), 'Innen : ' + inp_dict['V00KUE1RUM1TE02'] + " °C " + inp_dict['V00WOH1RUM1TE01'] + " °C", font = fontTime, fill = 0)
+        draw.text((0, 26), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " °C", font = fontTime, fill = 0)
+        draw.text((0, 42), 'Innen : ' + inp_dict['V00KUE1RUM1TE02'] + " °C " + inp_dict['V00WOH1RUM1TE01'] + " °C", font = fontTime, fill = 0)
         #draw.text((10, 58), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " degC ", font = fontTime, fill = 0)
-        draw.text((10, 74), 'Status: ' + set_dict['Status'], font = fontStatus, fill = 0)
+        draw.text((0, 74), 'Status: ' + set_dict['Status'], font = fontStatus, fill = 0)
         #draw.text((10, 90), 'Status: ' + set_dict['Status'], font = fontTime, fill = 0)
         epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
         epd.display_frame()
