@@ -24,17 +24,28 @@ draw = ImageDraw.Draw(image)
 image_width, image_height  = image.size
 draw.rectangle((0, 0, image_width, image_height), fill = 0)
 
-epd.clear_frame_memory(0xFF)
+epd.clear_frame_memory(255)
 epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
 epd.display_frame()
 
 draw.rectangle((0, 0, image_width, image_height), fill = 255)
-epd.clear_frame_memory(0xFF)
+epd.clear_frame_memory(255)
 epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
 epd.display_frame()
 epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
 epd.display_frame()
 
+# neu leeren
+emptimage = Image.new('1', (epd2in13.EPD_WIDTH, 32), 255)
+emptdraw = ImageDraw.Draw(emptimage)
+emptimage_width, emptimage_height  = emptimage.size
+for k in range(0, 3):
+    emptdraw.rectangle((0, 0, emptimage_width, emptimage_height), fill = 255)
+    epd.set_frame_memory(emptimage.transpose(emptimage.ROTATE_270), 0, k * 32)
+    epd.display_frame()
+
+
+image.save('./1.png', "PNG")
         
 def main():
     while 1:
