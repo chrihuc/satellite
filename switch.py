@@ -1,4 +1,4 @@
- 
+
 import RPi.GPIO as GPIO
 import time
 from socket import socket, AF_INET, SOCK_DGRAM
@@ -22,7 +22,7 @@ for _input in constants.GPIO_IN:
 def main():
     tuer = gpio_input_monitoring()
     tuer.monitor()
-      
+
 class gpio_input_monitoring:
 
     def __init__(self):
@@ -38,15 +38,15 @@ class gpio_input_monitoring:
             for _input in _int_adr:
                 wert = GPIO.input(_input)
                 pre_wert = self.alt[_input]
-                dicti = {'Value':wert, 'Name': 'GPIO.' + constants.name + '.' + _input}  
+                dicti = {'Value':wert, 'Name': 'GPIO.' + constants.name + '.' + str(_input)}
                 if wert <> pre_wert:
-                    server.sendto(str(dicti),(constants.server1,constants.broadPort)) 
+                    server.sendto(str(dicti),(constants.server1,constants.broadPort))
                     self.alt[_input] = wert
                 if counter >= 1800:
-                    server.sendto(str(dicti),(constants.server1,constants.broadPort))         
+                    server.sendto(str(dicti),(constants.server1,constants.broadPort))
             counter += 1
-            time.sleep(0.1)  
+            time.sleep(0.1)
             if counter >= 1800:
                 counter = 0
-                    
-if  __name__ =='__main__':main()                
+
+if  __name__ =='__main__':main()
