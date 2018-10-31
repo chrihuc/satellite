@@ -12,6 +12,10 @@ import constants
 import sys, os
 import git
 
+from time import localtime,strftime
+import paho.mqtt.client as mqtt
+import json
+
 # mySocket for receiving TCP commands
 # hbtsocked for sending the heartbeats to the server
 mySocket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
@@ -72,41 +76,114 @@ def supervise_threads(tliste):
                 break
             time.sleep(1)
 
-def upd_incoming():
-    while run:
-        conn, addr = mySocket.accept()
-        data = conn.recv(1024)
-        if not data:
-            break
-        isdict = False
-        try:
-            data_ev = eval(data)
-            if type(data_ev) is dict:
-                isdict = True
-        except Exception as serr:
-            isdict = False
-        result = False
-        if isdict:
-            if data_ev.get('Szene')=='Update':
-                conn.send('True')
-                conn.close()
-                git_update()
-            elif 'Device' in data_ev:
-    #           TODO threaded commands and stop if new comes in
-                if constants.tifo and data_ev.get('Device') in tifo_config.outputs:
-                    result = tf.set_device(data_ev)
-                elif constants.name in constants.LEDoutputs:
-                    if data_ev.get('Device') in constants.LEDoutputs[constants.name]:
-                        result = leds.set_device(**data_ev)
-                elif constants.zwave and data_ev['Device'] in zw_config.outputs:
-                    result = zwa.set_device(data_ev)
-                elif constants.raspicam and data_ev['Name'] == 'Take_Pic':
-                    take_pic()
-                elif constants.raspicam and data_ev['Name'] == 'Record_Video':
-                    take_vid()
-        conn.send(str(result))
-        conn.close()
+mqtt.Client.connected_flag=False
+client = None
+topics = ["Command/Satellite/" + constants.name + "/#"]
+ipaddress = constants.mqtt_.server
+port = 1883
 
+def connect(ipaddress, port):
+    global client
+    zeit =  time.time()
+    uhr = str(strftime("%Y-%m-%d %H:%M:%S",localtime(zeit)))
+    client = mqtt.Client(constants.name +'_sub_' + uhr, clean_session=False)
+    assign_handlers(on_connect, dis_con, on_message)
+    client.username_pw_set(username=constants.mqtt_.user,password=constants.mqtt_.password)
+    client.connect(ipaddress, port, 60)
+#    client.loop_start()
+    client.loop_forever()
+
+def assign_handlers(connect, disconnect, message):
+    """
+    :param mqtt.Client client:
+    :param connect:
+    :param message:
+    :return:
+    """
+
+    global client
+    client.on_connect = connect
+    client.on_disconnect = disconnect
+    client.on_message = message
+
+def dis_con (*args, **kargs):
+    print("disconnected")
+
+def on_connect(client_data, userdata, flags, rc):
+    global client, topics
+    if rc==0 and not client.connected_flag:
+        client.connected_flag=True #set flag
+        print("connected OK")
+        for topic in topics:
+            client.subscribe(topic)
+    elif client.connected_flag:
+        pass
+    else:
+        print("Bad connection Returned code=",rc)
+
+def on_message(client, userdata, msg):
+    print(msg.topic + " " + str(msg.payload))
+    try:
+        m_in=(json.loads(msg.payload)) #decode json data
+        print(m_in)
+        if m_in.get('Szene')=='Update':
+            git_update()        
+        if m_in['Name'] == "STOP":
+            os.system("sudo killall python")
+            #pass
+        elif 'Device' in m_in:
+#           TODO threaded commands and stop if new comes in
+            if constants.tifo and m_in.get('Device') in tifo_config.outputs:
+                result = tf.set_device(m_in)
+            elif constants.name in constants.LEDoutputs:
+                if m_in.get('Device') in constants.LEDoutputs[constants.name]:
+                    result = leds.set_device(**m_in)
+            elif constants.zwave and m_in['Device'] in zw_config.outputs:
+                result = zwa.set_device(m_in)
+            elif constants.raspicam and m_in['Name'] == 'Take_Pic':
+                take_pic()
+            elif constants.raspicam and m_in['Name'] == 'Record_Video':
+                take_vid()
+    except:
+        pass
+
+#def upd_incoming():
+#    while run:      
+#        connect(ipaddress, port)
+#        conn, addr = mySocket.accept()
+#        data = conn.recv(1024)
+#        if not data:
+#            break
+#        isdict = False
+#        try:
+#            data_ev = eval(data)
+#            if type(data_ev) is dict:
+#                isdict = True
+#        except Exception as serr:
+#            isdict = False
+#        result = False
+#        if isdict:
+#            if data_ev.get('Szene')=='Update':
+#                conn.send('True')
+#                conn.close()
+#                git_update()
+#            elif 'Device' in data_ev:
+#    #           TODO threaded commands and stop if new comes in
+#                if constants.tifo and data_ev.get('Device') in tifo_config.outputs:
+#                    result = tf.set_device(data_ev)
+#                elif constants.name in constants.LEDoutputs:
+#                    if data_ev.get('Device') in constants.LEDoutputs[constants.name]:
+#                        result = leds.set_device(**data_ev)
+#                elif constants.zwave and data_ev['Device'] in zw_config.outputs:
+#                    result = zwa.set_device(data_ev)
+#                elif constants.raspicam and data_ev['Name'] == 'Take_Pic':
+#                    take_pic()
+#                elif constants.raspicam and data_ev['Name'] == 'Record_Video':
+#                    take_vid()
+#        conn.send(str(result))
+#        conn.close()
+                
+                
 def take_pic():
     os.system("echo 'im' >/var/www/html/FIFO")
 
@@ -172,10 +249,12 @@ hb = threading.Thread(name="Heartbeat", target=send_heartbeat, args = [])
 threadliste.append(hb)
 hb.start()
 
-ud = threading.Thread(name="UDP Input", target=upd_incoming, args = [])
-threadliste.append(ud)
-ud.start()
+#ud = threading.Thread(name="UDP Input", target=upd_incoming, args = [])
+#threadliste.append(ud)
+#ud.start()
 
 sth = threading.Thread(name="sup_thread", target=supervise_threads, args = [threadliste])
 threadliste.append(sth)
 sth.start()
+
+connect(ipaddress, port)
