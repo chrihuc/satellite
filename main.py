@@ -78,7 +78,7 @@ def supervise_threads(tliste):
 
 mqtt.Client.connected_flag=False
 client = None
-topics = ["Command/Satellite/" + constants.name + "/#"]
+topics = ["Command/" + constants.name + "/#"]
 ipaddress = constants.mqtt_.server
 port = 1883
 
