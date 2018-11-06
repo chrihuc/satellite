@@ -2,7 +2,6 @@
 
 #c:/python27/python.exe leds.py
 
-from socket import socket, AF_INET, SOCK_DGRAM
 import time
 import threading
 from threading import Timer

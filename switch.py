@@ -1,14 +1,13 @@
 
 import RPi.GPIO as GPIO
 import time
-from socket import socket, AF_INET, SOCK_DGRAM
+import mqtt_publish
 
 import constants
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-server = socket( AF_INET, SOCK_DGRAM )
 
 _int_adr = {}
 
@@ -40,10 +39,12 @@ class gpio_input_monitoring:
                 pre_wert = self.alt[_input]
                 dicti = {'Value':wert, 'Name': 'GPIO.' + constants.name + '.' + str(_input)}
                 if wert <> pre_wert:
-                    server.sendto(str(dicti),(constants.server1,constants.broadPort))
+#                    server.sendto(str(dicti),(constants.server1,constants.broadPort))
+                    mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/' + str(_input),dicti)
                     self.alt[_input] = wert
                 if counter >= 1800:
-                    server.sendto(str(dicti),(constants.server1,constants.broadPort))
+#                    server.sendto(str(dicti),(constants.server1,constants.broadPort))
+                    mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/' + str(_input),dicti)                    
             counter += 1
             time.sleep(0.1)
             if counter >= 1800:

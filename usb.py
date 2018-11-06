@@ -1,20 +1,11 @@
 import pyudev
 import re
 import subprocess
-from socket import socket, AF_INET, SOCK_DGRAM
 import csv
-import paho.mqtt.client as mqtt
+import mqtt_publish
 
-import udp_send
 import constants
 
-client = mqtt.Client(constants.name)
-if constants.mqtt_.user != '':
-    client.username_pw_set(username=constants.mqtt_.user,password=constants.mqtt_.password)
-    client.connect(constants.mqtt_.server)
-    client.loop_start()
-
-server = socket( AF_INET, SOCK_DGRAM )
 device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
 
 
@@ -79,13 +70,13 @@ class usb_key:
     @staticmethod
     def send_to_server(devce, value):
         dicti = {'Name': 'USB.'+str(devce), 'Value': value}
-        server.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+#        server.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+        mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/USB/'+str(devce),dicti)
 
     def monitor(self):
         for device in iter(self.usb_monitor.poll, None):
             devce = device.get('ID_SERIAL_SHORT')
             db_out('change',devce, device.action)
-            client.publish("debug/dispi/usb", devce, qos=0)
             if device.action =="remove":
                 self.send_to_server(devce, 0)
                 usb_devs = self.check_att_sticks()

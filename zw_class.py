@@ -15,12 +15,14 @@ from louie import dispatcher
 import constants
 import zw_config
 
+import mqtt_publish
+
 device="/dev/ttyACM0"
 log='Debug'#"None"
 
-from socket import socket, AF_INET, SOCK_DGRAM
+#from socket import socket, AF_INET, SOCK_DGRAM
 
-mySocket = socket( AF_INET, SOCK_DGRAM )
+#mySocket = socket( AF_INET, SOCK_DGRAM )
 
 class zwave(object):
 
@@ -37,7 +39,8 @@ class zwave(object):
     
     def louie_network_started(self, network):
         dicti = {'Log':'Z-Wave Network started'}
-        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+#        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+        mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/Log',dicti)
         print("Hello from network : I'm started : homeid {:08x} - {} nodes were found.".format(network.home_id, network.nodes_count))
     
     def louie_network_failed(self, network):
@@ -46,7 +49,8 @@ class zwave(object):
     
     def louie_network_ready(self, network):
         dicti = {'Log':'Z-Wave Network up running'}
-        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+#        mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))
+        mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/Log',dicti)
         dispatcher.connect(self.louie_node_update, ZWaveNetwork.SIGNAL_NODE)
         dispatcher.connect(self.louie_scene_message, ZWaveNetwork.SIGNAL_NODE_EVENT)
         dispatcher.connect(self.louie_value_update, ZWaveNetwork.SIGNAL_VALUE)
@@ -79,7 +83,8 @@ class zwave(object):
             dicti = {'Value': 'ZWave.' + str(int(value.data))}
             dicti['Name'] = zw_config.inputs[node.home_id][value.value_id]
             #print dicti
-            mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))            
+#            mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))     
+            mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/ZWave/' + str(int(value.data)) ,dicti)
         except:
             print 'not understood', node, value.value_id, value.data
 #        print("Hello from value : {}.".format( value ))

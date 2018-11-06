@@ -7,6 +7,8 @@ Created on Sat Apr  2 08:27:20 2016
 import ConfigParser
 import socket
 
+version = '2.0'
+
 own_ip = socket.gethostbyname(socket.gethostname())
 
 cfg_main={'Name':'Satellite1','Server1':'192.168.192.10','broadPort':5000,'biPort':5050,

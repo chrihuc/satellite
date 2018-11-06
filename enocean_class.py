@@ -11,8 +11,9 @@ from enocean.protocol.packet import RadioPacket
 from enocean.protocol.constants import PACKET, RORG
 import sys
 import traceback
+import constants
 
-import udp_send
+import mqtt_publish
 
 #sudo pip install git+https://github.com/chrihuc/enocean.git
 
@@ -55,7 +56,9 @@ class Encocean_Sat(object):
                 if packet.packet_type == PACKET.RADIO and packet.rorg == RORG.RPS:
                     received = packet.parse_eep(0x02, 0x02)
                     print packet.sender_hex, packet.parsed['EB']['raw_value']
-                    udp_send.send_to_server('Enocean.' + packet.sender_hex, packet.parsed['EB']['raw_value'])
+#                    udp_send.send_to_server('Enocean.' + packet.sender_hex, packet.parsed['EB']['raw_value'])
+                    dicti = {'Name': 'Enocean.'+str(packet.sender_hex), 'Value': str(packet.parsed['EB']['raw_value'])}
+                    mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/Enocean/'+str(packet.sender_hex),dicti)
             except queue.Empty:
                 continue
             except KeyboardInterrupt:

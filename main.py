@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
 import threading
-import socket
 import time
 
-import tifo_config
 # TODO: LED Class
 # TODO: USB key
 import zw_config
@@ -14,65 +12,58 @@ import git
 
 from time import localtime,strftime
 import paho.mqtt.client as mqtt
+import mqtt_publish
 import json
 
-# mySocket for receiving TCP commands
-# hbtsocked for sending the heartbeats to the server
-mySocket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-hbtsocket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
-mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-mySocket.bind( ('', constants.biPort) )
-mySocket.listen(128)
-SIZE = 1024
 
 threadliste = []
 
-run = True
+constants.run = True
 
 if sys.argv:
     if 'debug' in sys.argv:
         print('debug on')
         constants.debug = True
 
-if constants.tifo:
-    os.system("sudo service brickd stop")
-    os.system("sudo service brickd start")
-    time.sleep(2)
+#if constants.tifo:
+#    os.system("sudo service brickd stop")
+#    os.system("sudo service brickd start")
+#    time.sleep(2)
 
 def db_out(text):
     if constants.debug:
         print(text)
 
 def git_update():
-    global run
     g = git.cmd.Git()
     g.reset('--hard')
     g.pull()
     print "Update done, exiting"
-    run = False
+    constants.run = False
     sys.exit()
 
 def send_heartbeat():
-    while run:
+    while constants.run:
         dicti = {}
-        dicti['Value'] = str(1)
+        dicti['Value'] = constants.version
         dicti['Name'] = 'Hrtbt.' + constants.name
-        hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))
+#        hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))
+        mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/Hrtbt/' + constants.name,dicti)
         for i in range(0,60):
-            if not run:
+            if not constants.run:
                 break
             time.sleep(1)
 
 def supervise_threads(tliste):
 #    print tliste
-    while run:
+    while constants.run:
         for t in tliste:
             if not t in threading.enumerate():
                 print t.name
                 sys.exit()
                 exit()
         for i in range(0,60):
-            if not run:
+            if not constants.run:
                 break
             time.sleep(1)
 
@@ -123,27 +114,28 @@ def on_connect(client_data, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
+    retained = msg.retain
     try:
         m_in=(json.loads(msg.payload)) #decode json data
         print(m_in)
-        if m_in.get('Szene')=='Update':
+        if m_in.get('Szene')=='Update' and not retained:
             git_update()        
-        if m_in['Name'] == "STOP":
+        if m_in['Name'] == "STOP" and not retained:
             os.system("sudo killall python")
             #pass
         elif 'Device' in m_in:
 #           TODO threaded commands and stop if new comes in
-            if constants.tifo and m_in.get('Device') in tifo_config.outputs:
-                result = tf.set_device(m_in)
-            elif constants.name in constants.LEDoutputs:
-                if m_in.get('Device') in constants.LEDoutputs[constants.name]:
-                    result = leds.set_device(**m_in)
-            elif constants.zwave and m_in['Device'] in zw_config.outputs:
-                result = zwa.set_device(m_in)
-            elif constants.raspicam and m_in['Name'] == 'Take_Pic':
-                take_pic()
-            elif constants.raspicam and m_in['Name'] == 'Record_Video':
-                take_vid()
+            if retained:
+                if constants.name in constants.LEDoutputs:
+                    if m_in.get('Device') in constants.LEDoutputs[constants.name]:
+                        result = leds.set_device(**m_in)
+            else:
+                if constants.zwave and m_in['Device'] in zw_config.outputs:
+                    result = zwa.set_device(m_in)
+                elif constants.raspicam and m_in['Name'] == 'Take_Pic':
+                    take_pic()
+                elif constants.raspicam and m_in['Name'] == 'Record_Video':
+                    take_vid()
     except:
         pass
 
@@ -194,10 +186,10 @@ def take_vid():
 #    from tf_class import tiFo
 #    tf = tiFo()
 
-if constants.tifo:
-    from tf_connection import TiFo
-    tf = TiFo()
-    tf.main()
+#if constants.tifo:
+#    from tf_connection import TiFo
+#    tf = TiFo()
+#    tf.main()
 
 
 if constants.PiLEDs:

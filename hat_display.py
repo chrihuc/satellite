@@ -9,8 +9,12 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-import udp_send
+from time import localtime,strftime
+import paho.mqtt.client as mqtt
 import time
+import json
+
+import constants
 
 epd = epd2in13.EPD()
 epd.init(epd.lut_full_update)
@@ -46,21 +50,84 @@ for k in range(0, 3):
 
 
 image.save('./1.png', "PNG")
-        
+      
+mqtt.Client.connected_flag=False
+client = None
+topics = ["Settings/Status", "Input/A00TER1GEN1TE01", "Input/V00WOH1RUM1TE01", "Input/V00WOH1RUM1TE02"]
+ipaddress = constants.mqtt_.server
+port = 1883
+
+def connect(ipaddress, port):
+    global client
+    zeit =  time.time()
+    uhr = str(strftime("%Y-%m-%d %H:%M:%S",localtime(zeit)))
+    client = mqtt.Client(constants.name +'_disp_' + uhr, clean_session=False)
+    assign_handlers(on_connect, dis_con, on_message)
+    client.username_pw_set(username=constants.mqtt_.user,password=constants.mqtt_.password)
+    client.connect(ipaddress, port, 60)
+#    client.loop_start()
+    client.loop_forever()
+
+def assign_handlers(connect, disconnect, message):
+    """
+    :param mqtt.Client client:
+    :param connect:
+    :param message:
+    :return:
+    """
+
+    global client
+    client.on_connect = connect
+    client.on_disconnect = disconnect
+    client.on_message = message
+
+def dis_con (*args, **kargs):
+    print("disconnected")
+
+def on_connect(client_data, userdata, flags, rc):
+    global client, topics
+    if rc==0 and not client.connected_flag:
+        client.connected_flag=True #set flag
+        print("connected OK")
+        for topic in topics:
+            client.subscribe(topic)
+    elif client.connected_flag:
+        pass
+    else:
+        print("Bad connection Returned code=",rc)
+
+def on_message(client, userdata, msg):
+    print(msg.topic + " " + str(msg.payload))
+    retained = msg.retain
+    try:
+        m_in=(json.loads(msg.payload)) #decode json data
+        print(m_in)
+        if 'Status' in m_in:
+            draw.text((0, 74), 'Status: ' + m_in['Value'], font = fontStatus, fill = 0)
+        elif 'A00TER1GEN1TE01' in m_in:
+            draw.text((0, 26), 'Aussen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
+        elif 'V00KUE1RUM1TE02' in m_in:
+            draw.text((0, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
+        elif 'V00WOH1RUM1TE01' in m_in:
+            draw.text((40, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)            
+    except:
+        pass
+  
 def main():
-    while 1:
-        #draw = ImageDraw.Draw(image)
-        inp_dict = udp_send.bidirekt_new('Inputs')
-        set_dict = udp_send.bidirekt_new('Settings')
-        draw.rectangle((0, 0, image_width, image_height), fill = 255)
-        draw.text((0, 0), time.strftime('%H:%M'), font = fontTime, fill = 0)
+    connect(ipaddress, port)
+    while constants.run:
+#        #draw = ImageDraw.Draw(image)
+#        inp_dict = udp_send.bidirekt_new('Inputs')
+#        set_dict = udp_send.bidirekt_new('Settings')
+#        draw.rectangle((0, 0, image_width, image_height), fill = 255)
+#        draw.text((0, 0), time.strftime('%H:%M'), font = fontTime, fill = 0)
+#        
+#        draw.text((0, 26), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " °C", font = fontTime, fill = 0)
+#        draw.text((0, 42), 'Innen : ' + inp_dict['V00KUE1RUM1TE02'] + " °C " + inp_dict['V00WOH1RUM1TE01'] + " °C", font = fontTime, fill = 0)
+#        #draw.text((10, 58), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " degC ", font = fontTime, fill = 0)
+#        draw.text((0, 74), 'Status: ' + set_dict['Status'], font = fontStatus, fill = 0)
+#        #draw.text((10, 90), 'Status: ' + set_dict['Status'], font = fontTime, fill = 0)
+#        epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+#        epd.display_frame()
         
-        draw.text((0, 26), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " °C", font = fontTime, fill = 0)
-        draw.text((0, 42), 'Innen : ' + inp_dict['V00KUE1RUM1TE02'] + " °C " + inp_dict['V00WOH1RUM1TE01'] + " °C", font = fontTime, fill = 0)
-        #draw.text((10, 58), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " degC ", font = fontTime, fill = 0)
-        draw.text((0, 74), 'Status: ' + set_dict['Status'], font = fontStatus, fill = 0)
-        #draw.text((10, 90), 'Status: ' + set_dict['Status'], font = fontTime, fill = 0)
-        epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-        epd.display_frame()
-        
-        time.sleep(60)        
+        time.sleep(5)        
