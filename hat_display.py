@@ -45,12 +45,12 @@ emptdraw = ImageDraw.Draw(emptimage)
 emptimage_width, emptimage_height  = emptimage.size
 for k in range(0, 3):
     emptdraw.rectangle((0, 0, emptimage_width, emptimage_height), fill = 255)
-    epd.set_frame_memory(emptimage.transpose(emptimage.ROTATE_270), 0, k * 32)
+    epd.set_frame_memory(emptimage.transpose(image.ROTATE_270), 0, k * 32)
     epd.display_frame()
 
 
 image.save('./1.png', "PNG")
-      
+
 mqtt.Client.connected_flag=False
 client = None
 topics = ["Settings/Status", "Input/A00TER1GEN1TE01", "Input/V00WOH1RUM1TE01", "Input/V00WOH1RUM1TE02"]
@@ -109,10 +109,10 @@ def on_message(client, userdata, msg):
         elif 'V00KUE1RUM1TE02' in m_in:
             draw.text((0, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
         elif 'V00WOH1RUM1TE01' in m_in:
-            draw.text((40, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)            
+            draw.text((40, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
     except:
         pass
-  
+
 def main():
     connect(ipaddress, port)
     while constants.run:
@@ -121,7 +121,7 @@ def main():
 #        set_dict = udp_send.bidirekt_new('Settings')
 #        draw.rectangle((0, 0, image_width, image_height), fill = 255)
 #        draw.text((0, 0), time.strftime('%H:%M'), font = fontTime, fill = 0)
-#        
+#
 #        draw.text((0, 26), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " °C", font = fontTime, fill = 0)
 #        draw.text((0, 42), 'Innen : ' + inp_dict['V00KUE1RUM1TE02'] + " °C " + inp_dict['V00WOH1RUM1TE01'] + " °C", font = fontTime, fill = 0)
 #        #draw.text((10, 58), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " degC ", font = fontTime, fill = 0)
@@ -129,5 +129,5 @@ def main():
 #        #draw.text((10, 90), 'Status: ' + set_dict['Status'], font = fontTime, fill = 0)
 #        epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
 #        epd.display_frame()
-        
-        time.sleep(5)        
+
+        time.sleep(5)
