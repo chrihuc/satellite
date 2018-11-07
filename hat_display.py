@@ -53,7 +53,7 @@ image.save('./1.png', "PNG")
 
 mqtt.Client.connected_flag=False
 client = None
-topics = ["Settings/Status", "Input/A00TER1GEN1TE01", "Input/V00WOH1RUM1TE01", "Input/V00WOH1RUM1TE02"]
+topics = ["Settings/Status", "Inputs/A00TER1GEN1TE01", "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02"]
 ipaddress = constants.mqtt_.server
 port = 1883
 
@@ -102,6 +102,8 @@ def on_message(client, userdata, msg):
     try:
         m_in=(json.loads(msg.payload)) #decode json data
         print(m_in)
+        draw = ImageDraw.Draw(image)
+        draw.rectangle((0, 0, image_width, image_height), fill = 255)
         if 'Status' in m_in:
             draw.text((0, 74), 'Status: ' + m_in['Value'], font = fontStatus, fill = 0)
         elif 'A00TER1GEN1TE01' in m_in:
@@ -110,6 +112,8 @@ def on_message(client, userdata, msg):
             draw.text((0, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
         elif 'V00WOH1RUM1TE01' in m_in:
             draw.text((40, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
+        epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+        epd.display_frame()
     except:
         pass
 
