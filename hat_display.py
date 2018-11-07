@@ -45,7 +45,7 @@ emptdraw = ImageDraw.Draw(emptimage)
 emptimage_width, emptimage_height  = emptimage.size
 for k in range(0, 3):
     emptdraw.rectangle((0, 0, emptimage_width, emptimage_height), fill = 255)
-    epd.set_frame_memory(emptimage.transpose(image.ROTATE_270), 0, k * 32)
+    epd.set_frame_memory(emptimage.transpose(Image.ROTATE_270), 0, k * 32)
     epd.display_frame()
 
 
