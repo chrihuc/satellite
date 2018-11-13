@@ -48,14 +48,16 @@ draw.rectangle((0, 0, image_width, image_height), fill = 0)
 #    epd.set_frame_memory(emptimage.transpose(Image.ROTATE_270), 0, k * 32)
 #    epd.display_frame()
 
-pix_size = 128
+pix_size = 64
 pixel = Image.new('1', (pix_size,pix_size), 0)
 for x in range(0,epd2in13.EPD_WIDTH,pix_size):
     for y in range(0,epd2in13.EPD_HEIGHT,pix_size):
         for fc in range(2):
             epd.set_frame_memory(pixel, x, y)
             epd.display_frame()
+        print(x,y)
 
+print('Cleared')
 #image.save('./1.png', "PNG")
 
 mqtt.Client.connected_flag=False
@@ -114,30 +116,34 @@ def on_message(client, userdata, msg):
             print('Status: ' + m_in['Value'])
         elif 'A00TER1GEN1TE01' in m_in:
             draw.text((0, 26), 'Aussen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
+            print('Aussen: ' + m_in['Value'])
         elif 'V00KUE1RUM1TE02' in m_in:
             draw.text((0, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
+            print('Innen: ' + m_in['Value'])
         elif 'V00WOH1RUM1TE01' in m_in:
             draw.text((40, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
+            print('Innen: ' + m_in['Value'])
         epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
         epd.display_frame()
+        image.save('./1.png', "PNG")
     except:
-        pass
+        print('Error on evaluating')
 
 def main():
     connect(ipaddress, port)
-    while constants.run:
+#    while constants.run:
         #draw = ImageDraw.Draw(image)
 #        inp_dict = udp_send.bidirekt_new('Inputs')
 #        set_dict = udp_send.bidirekt_new('Settings')
 #        draw.rectangle((0, 0, image_width, image_height), fill = 255)
-        draw.text((0, 0), time.strftime('%H:%M'), font = fontTime, fill = 0)
+#        draw.text((0, 0), time.strftime('%H:%M'), font = fontTime, fill = 0)
 
 #        draw.text((0, 26), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " °C", font = fontTime, fill = 0)
 #        draw.text((0, 42), 'Innen : ' + inp_dict['V00KUE1RUM1TE02'] + " °C " + inp_dict['V00WOH1RUM1TE01'] + " °C", font = fontTime, fill = 0)
         #draw.text((10, 58), 'Aussen: ' + inp_dict['A00TER1GEN1TE01'] + " degC ", font = fontTime, fill = 0)
 #        draw.text((0, 74), 'Status: ' + set_dict['Status'], font = fontStatus, fill = 0)
         #draw.text((10, 90), 'Status: ' + set_dict['Status'], font = fontTime, fill = 0)
-        epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-        epd.display_frame()
+#        epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+#        epd.display_frame()
 
-        time.sleep(60)
+#        time.sleep(60)
