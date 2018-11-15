@@ -123,7 +123,7 @@ def on_message(client, userdata, msg):
             print('Status: ' + m_in['Value'])
             draw.text((0, 74), 'Status: ' + m_in['Value'], font = fontStatus, fill = 0)
         elif 'A00TER1GEN1TE01' in m_in:
-             print('Aussen: ' + m_in['Value'])
+            print('Aussen: ' + m_in['Value'])
             draw.text((0, 26), 'Aussen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
         elif 'V00KUE1RUM1TE02' in m_in:
             draw.text((0, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
