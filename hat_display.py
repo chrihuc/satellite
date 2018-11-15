@@ -18,10 +18,10 @@ import constants
 
 epd = epd2in13.EPD()
 epd.init(epd.lut_full_update)
-epd.init(epd.lut_partial_update)
+#epd.init(epd.lut_partial_update)
 fontTime = ImageFont.truetype('./display/FreeMonoBold.ttf', 16)
 fontStatus = ImageFont.truetype('./display/FreeMonoBold.ttf', 18)
-epd.delay_ms(2000)
+#epd.delay_ms(2000)
 
 image = Image.new('1', (epd2in13.EPD_HEIGHT, epd2in13.EPD_WIDTH), 255)  # 255: clear the frame
 draw = ImageDraw.Draw(image)
@@ -47,6 +47,11 @@ draw.rectangle((0, 0, image_width, image_height), fill = 0)
 #    emptdraw.rectangle((0, 0, emptimage_width, emptimage_height), fill = 255)
 #    epd.set_frame_memory(emptimage.transpose(Image.ROTATE_270), 0, k * 32)
 #    epd.display_frame()
+
+epd.clear_frame_memory(0xFF)
+epd.display_frame()
+epd.clear_frame_memory(0xFF)
+epd.display_frame()
 
 pix_size = 32
 pixel = Image.new('1', (pix_size,pix_size), 0)
@@ -131,7 +136,7 @@ def on_message(client, userdata, msg):
 
 def main():
     connect(ipaddress, port)
-#    while constants.run:
+    while constants.run:
         #draw = ImageDraw.Draw(image)
 #        inp_dict = udp_send.bidirekt_new('Inputs')
 #        set_dict = udp_send.bidirekt_new('Settings')
@@ -146,4 +151,4 @@ def main():
 #        epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
 #        epd.display_frame()
 
-#        time.sleep(60)
+        time.sleep(60)
