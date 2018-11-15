@@ -53,14 +53,15 @@ epd.display_frame()
 epd.clear_frame_memory(0xFF)
 epd.display_frame()
 
-pix_size = 48 # 32 ging 64 nicht
-pixel = Image.new('1', (pix_size,pix_size), 0)
-for x in range(0,epd2in13.EPD_WIDTH,pix_size):
-    for y in range(0,epd2in13.EPD_HEIGHT,pix_size):
-        for fc in range(2):
-            epd.set_frame_memory(pixel, x, y)
-            epd.display_frame()
-        print(x,y)
+if False:
+    pix_size = 48 # 32 ging 64 nicht
+    pixel = Image.new('1', (pix_size,pix_size), 0)
+    for x in range(0,epd2in13.EPD_WIDTH,pix_size):
+        for y in range(0,epd2in13.EPD_HEIGHT,pix_size):
+            for fc in range(2):
+                epd.set_frame_memory(pixel, x, y)
+                epd.display_frame()
+            print(x,y)
 
 print('Cleared')
 #image.save('./1.png', "PNG")
@@ -113,10 +114,11 @@ def on_connect(client_data, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
-    retained = msg.retain
+#    retained = msg.retain
     try:
         m_in=(json.loads(msg.payload)) #decode json data
 #        draw.rectangle((0, 0, image_width, image_height), fill = 255)
+        print(m_in)
         if 'Status' in m_in:
             draw.text((0, 74), 'Status: ' + m_in['Value'], font = fontStatus, fill = 0)
             print('Status: ' + m_in['Value'])
