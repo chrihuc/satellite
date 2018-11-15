@@ -48,7 +48,7 @@ draw.rectangle((0, 0, image_width, image_height), fill = 0)
 #    epd.set_frame_memory(emptimage.transpose(Image.ROTATE_270), 0, k * 32)
 #    epd.display_frame()
 
-pix_size = 64
+pix_size = 32
 pixel = Image.new('1', (pix_size,pix_size), 0)
 for x in range(0,epd2in13.EPD_WIDTH,pix_size):
     for y in range(0,epd2in13.EPD_HEIGHT,pix_size):

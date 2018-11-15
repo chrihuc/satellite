@@ -79,12 +79,12 @@ class zwave(object):
     def louie_value_update(self, network, node, value):
         print "value changed"
         try:
-            print zw_config.inputs[node.home_id][value.value_id], int(value.data)
-            dicti = {'Value': 'ZWave.' + str(int(value.data))}
-            dicti['Name'] = zw_config.inputs[node.home_id][value.value_id]
+#            print zw_config.inputs[node.home_id][value.value_id], int(value.data)
+            dicti = {'Value': str(int(value.data))}
+            dicti['Name'] = 'ZWave.' + str(node.home_id) + '.' + str(value.value_id)
             #print dicti
 #            mySocket.sendto(str(dicti) ,(constants.server1,constants.broadPort))     
-            mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/ZWave/' + str(int(value.data)) ,dicti)
+            mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/ZWave/' + str(int(node.home_id)) +'/'+ str(int(value.value_id)) ,dicti)
         except:
             print 'not understood', node, value.value_id, value.data
 #        print("Hello from value : {}.".format( value ))
