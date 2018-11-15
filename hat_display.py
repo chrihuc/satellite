@@ -53,7 +53,7 @@ epd.display_frame()
 epd.clear_frame_memory(0xFF)
 epd.display_frame()
 
-pix_size = 64
+pix_size = 48 # 32 ging 64 nicht
 pixel = Image.new('1', (pix_size,pix_size), 0)
 for x in range(0,epd2in13.EPD_WIDTH,pix_size):
     for y in range(0,epd2in13.EPD_HEIGHT,pix_size):
@@ -105,13 +105,14 @@ def on_connect(client_data, userdata, flags, rc):
         print("connected OK")
         for topic in topics:
             client.subscribe(topic)
+            print('subscrived',topic)
     elif client.connected_flag:
         pass
     else:
         print("Bad connection Returned code=",rc)
 
 def on_message(client, userdata, msg):
-#    print(msg.topic + " " + str(msg.payload))
+    print(msg.topic + " " + str(msg.payload))
     retained = msg.retain
     try:
         m_in=(json.loads(msg.payload)) #decode json data
@@ -136,7 +137,7 @@ def on_message(client, userdata, msg):
 
 def main():
     connect(ipaddress, port)
-    while constants.run:
+#    while constants.run:
         #draw = ImageDraw.Draw(image)
 #        inp_dict = udp_send.bidirekt_new('Inputs')
 #        set_dict = udp_send.bidirekt_new('Settings')
@@ -151,7 +152,7 @@ def main():
 #        epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
 #        epd.display_frame()
 
-        time.sleep(60)
+#        time.sleep(60)
 
 if __name__ == '__main__':
     main()
