@@ -113,29 +113,29 @@ def on_connect(client_data, userdata, flags, rc):
         print("Bad connection Returned code=",rc)
 
 def on_message(client, userdata, msg):
-    print(msg.topic + " " + str(msg.payload))
+#    print(msg.topic + " " + str(msg.payload))
 #    retained = msg.retain
     try:
         m_in=(json.loads(msg.payload)) #decode json data
 #        draw.rectangle((0, 0, image_width, image_height), fill = 255)
-        print(m_in)
+#        print(m_in)
         if 'Status' in m_in.values():
-            print('Status: ' + m_in['Value'])
+#            print('Status: ' + m_in['Value'])
             draw.text((0, 74), 'Status: ' + m_in['Value'], font = fontStatus, fill = 0)
         elif 'A00TER1GEN1TE01' in m_in.values():
-            print('Aussen: ' + m_in['Value'])
+#            print('Aussen: ' + m_in['Value'])
             draw.text((0, 26), 'Aussen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
         elif 'V00KUE1RUM1TE02' in m_in.values():
             draw.text((0, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
-            print('Innen: ' + m_in['Value'])
+#            print('Innen: ' + m_in['Value'])
         elif 'V00WOH1RUM1TE01' in m_in.values():
-            print('Innen: ' + m_in['Value'])
+#            print('Innen: ' + m_in['Value'])
             draw.text((40, 42), 'Innen: ' + m_in['Value'] + " °C", font = fontTime, fill = 0)
         epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
         epd.display_frame()
         image.save('./1.png', "PNG")
-    except:
-        print('Error on evaluating')
+    except Exception as e:
+        print('Error on', e)
 
 def main():
     connect(ipaddress, port)
