@@ -53,7 +53,7 @@ epd.display_frame()
 epd.clear_frame_memory(0xFF)
 epd.display_frame()
 
-pix_size = 32
+pix_size = 64
 pixel = Image.new('1', (pix_size,pix_size), 0)
 for x in range(0,epd2in13.EPD_WIDTH,pix_size):
     for y in range(0,epd2in13.EPD_HEIGHT,pix_size):
@@ -152,3 +152,6 @@ def main():
 #        epd.display_frame()
 
         time.sleep(60)
+
+if __name__ == '__main__':
+    main()
