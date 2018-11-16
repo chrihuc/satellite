@@ -178,6 +178,7 @@ def on_message(client, userdata, msg):
                 
 def take_pic():
     os.system("echo 'im' >/var/www/html/FIFO")
+    mqtt_publish.send_pic()
 
 def take_vid():
     os.system("echo 'ca 1 10' >/var/www/html/FIFO")

@@ -53,8 +53,8 @@ epd.display_frame()
 epd.clear_frame_memory(0xFF)
 epd.display_frame()
 
-if False:
-    pix_size = 48 # 32 ging 64 nicht
+if True:
+    pix_size = 32 # 32 ging 64 nicht
     pixel = Image.new('1', (pix_size,pix_size), 0)
     for x in range(0,epd2in13.EPD_WIDTH,pix_size):
         for y in range(0,epd2in13.EPD_HEIGHT,pix_size):
