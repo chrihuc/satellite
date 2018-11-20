@@ -37,7 +37,7 @@ def send_pic():
     fileContent = f.read() #String
     byteArr = (bytearray(fileContent)) # working
 #    byteArr = (bytes(fileContent)) # working
-    client.publish('Image/Satellite/' + constants.name + '/Channel1' ,byteArr,1,retain=True)
+    client.publish('Image/Satellite/' + constants.name + '/Channel1' ,byteArr,1,retain=False)
 #    client.publish('Image/' + constants.name,'test',1,retain=True)
     print('pic send')
 
