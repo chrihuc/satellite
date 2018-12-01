@@ -7,7 +7,7 @@ Created on Sat Apr  2 08:27:20 2016
 import ConfigParser
 import socket
 
-version = '2.1'
+version = '2.2'
 
 own_ip = socket.gethostbyname(socket.gethostname())
 
