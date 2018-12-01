@@ -115,15 +115,16 @@ def on_connect(client_data, userdata, flags, rc):
 def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
     retained = msg.retain
+    message = str(msg.payload.decode("utf-8"))
     try:
-        m_in=(json.loads(msg.payload)) #decode json data
+        m_in=(json.loads(message)) #decode json data
         print(m_in)
         if m_in.get('Szene')=='Update' and not retained:
             git_update()        
         if m_in['Name'] == "STOP" and not retained:
             os.system("sudo killall python")
             #pass
-        elif 'Device' in m_in:
+        elif u'Device' in m_in:
 #           TODO threaded commands and stop if new comes in
             if retained:
                 if constants.name in constants.LEDoutputs:
