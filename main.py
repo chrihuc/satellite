@@ -120,11 +120,11 @@ def on_message(client, userdata, msg):
         m_in=(json.loads(message)) #decode json data
         print(m_in)
         if m_in.get('Szene')=='Update' and not retained:
-            git_update()        
+            git_update()
         if m_in['Name'] == "STOP" and not retained:
             os.system("sudo killall python")
             #pass
-        elif u'Device' in m_in:
+        elif 'Device' in m_in.keys():
 #           TODO threaded commands and stop if new comes in
             if retained:
                 if constants.name in constants.LEDoutputs:
@@ -141,7 +141,7 @@ def on_message(client, userdata, msg):
         pass
 
 #def upd_incoming():
-#    while run:      
+#    while run:
 #        connect(ipaddress, port)
 #        conn, addr = mySocket.accept()
 #        data = conn.recv(1024)
@@ -175,8 +175,8 @@ def on_message(client, userdata, msg):
 #                    take_vid()
 #        conn.send(str(result))
 #        conn.close()
-                
-                
+
+
 def take_pic():
     os.system("echo 'im' >/var/www/html/FIFO")
     mqtt_publish.send_pic()
