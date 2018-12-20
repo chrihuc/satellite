@@ -126,11 +126,10 @@ def on_message(client, userdata, msg):
             #pass
         elif 'Device' in m_in.keys():
 #           TODO threaded commands and stop if new comes in
-            if retained:
-                if constants.name in constants.LEDoutputs:
-                    if m_in.get('Device') in constants.LEDoutputs[constants.name]:
-                        result = leds.set_device(**m_in)
-            else:
+            if constants.name in constants.LEDoutputs:
+                if m_in.get('Device') in constants.LEDoutputs[constants.name]:
+                    result = leds.set_device(**m_in)
+            if not retained:
                 if constants.zwave and m_in['Device'] in zw_config.outputs:
                     result = zwa.set_device(m_in)
                 elif constants.raspicam and m_in['Name'] == 'Take_Pic':
