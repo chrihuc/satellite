@@ -26,7 +26,7 @@ fontStatus = ImageFont.truetype('./display/FreeMonoBold.ttf', 18)
 image = Image.new('1', (epd2in13.EPD_HEIGHT, epd2in13.EPD_WIDTH), 255)  # 255: clear the frame
 draw = ImageDraw.Draw(image)
 image_width, image_height  = image.size
-draw.rectangle((0, 0, image_width, image_height), fill = 0)
+draw.rectangle((0, 0, image_width, image_height), fill = 255)
 
 #epd.clear_frame_memory(255)
 #epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
@@ -118,23 +118,30 @@ def on_message(client, userdata, msg):
     message = str(msg.payload.decode("utf-8"))
     try:
         m_in=(json.loads(message)) #decode json data
+#        draw = ImageDraw.Draw(image)
 #        draw.rectangle((0, 0, image_width, image_height), fill = 255)
+        redraw = False
 #        print(m_in)
         if 'Status' in m_in.values():
 #            print('Status: ' + m_in['Value'])
             draw.text((0, 74), 'Status: ' + m_in['Value'], font = fontStatus, fill = 0)
+            redraw = True
         elif 'A00TER1GEN1TE01' in m_in.values():
 #            print('Aussen: ' + m_in['Value'])
             draw.text((0, 26), 'Aussen: ' + m_in['Value'] + u" °C", font = fontTime, fill = 0)
+            redraw = True            
         elif 'V00KUE1RUM1TE02' in m_in.values():
             draw.text((0, 42), 'Innen: ' + m_in['Value'] + u" °C", font = fontTime, fill = 0)
+            redraw = True            
 #            print('Innen: ' + m_in['Value'])
         elif 'V00WOH1RUM1TE01' in m_in.values():
 #            print('Innen: ' + m_in['Value'])
             draw.text((40, 42), 'Innen: ' + m_in['Value'] + u" °C", font = fontTime, fill = 0)
-        epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-        epd.display_frame()
-        image.save('./1.png', "PNG")
+            redraw = True
+        if redraw:            
+            epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+            epd.display_frame()
+            image.save('./1.png', "PNG")
     except Exception as e:
         print('Error on', e)
 
