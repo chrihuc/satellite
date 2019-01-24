@@ -23,7 +23,7 @@ fontTime = ImageFont.truetype('./display/FreeMonoBold.ttf', 16)
 fontStatus = ImageFont.truetype('./display/FreeMonoBold.ttf', 18)
 #epd.delay_ms(2000)
 
-values = {}
+
 
 image = Image.new('1', (epd2in13.EPD_HEIGHT, epd2in13.EPD_WIDTH), 255)  # 255: clear the frame
 draw = ImageDraw.Draw(image)
@@ -113,6 +113,12 @@ def on_connect(client_data, userdata, flags, rc):
         pass
     else:
         print("Bad connection Returned code=",rc)
+
+values = {'Time':'', 
+          'A00TER1GEN1TE01':'',
+          'V00KUE1RUM1TE02':'',
+          'V00WOH1RUM1TE01':'',
+          'Status':''}
 
 def on_message(client, userdata, msg):
 #    print(msg.topic + " " + str(msg.payload))
