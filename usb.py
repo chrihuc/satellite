@@ -71,7 +71,7 @@ class usb_key:
     def send_to_server(devce, value):
         dicti = {'Name': 'USB.'+str(devce), 'Value': value}
 #        server.sendto(str(dicti) ,(constants.server1,constants.broadPort))
-        mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/USB/'+str(devce),dicti)
+        mqtt_publish.mqtt_pub('Inputs/Satellite/USB/'+str(devce),dicti)
 
     def monitor(self):
         for device in iter(self.usb_monitor.poll, None):

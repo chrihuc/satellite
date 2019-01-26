@@ -23,7 +23,7 @@ fontTime = ImageFont.truetype('./display/FreeMonoBold.ttf', 16)
 fontStatus = ImageFont.truetype('./display/FreeMonoBold.ttf', 18)
 #epd.delay_ms(2000)
 
-
+values = {}
 
 image = Image.new('1', (epd2in13.EPD_HEIGHT, epd2in13.EPD_WIDTH), 255)  # 255: clear the frame
 draw = ImageDraw.Draw(image)
@@ -56,7 +56,7 @@ epd.clear_frame_memory(0xFF)
 epd.display_frame()
 
 if True:
-    pix_size = 16 # 32 ging 64 nicht
+    pix_size = 32 # 32 ging 64 nicht
     pixel = Image.new('1', (pix_size,pix_size), 0)
     for x in range(0,epd2in13.EPD_WIDTH,pix_size):
         for y in range(0,epd2in13.EPD_HEIGHT,pix_size):
@@ -114,12 +114,6 @@ def on_connect(client_data, userdata, flags, rc):
     else:
         print("Bad connection Returned code=",rc)
 
-values = {'Time':'', 
-          'A00TER1GEN1TE01':'',
-          'V00KUE1RUM1TE02':'',
-          'V00WOH1RUM1TE01':'',
-          'Status':''}
-
 def on_message(client, userdata, msg):
 #    print(msg.topic + " " + str(msg.payload))
 #    retained = msg.retain
@@ -149,10 +143,12 @@ def on_message(client, userdata, msg):
             draw.text((0, 0), 'Time: ' + values['Time'] + u"    ", font = fontTime, fill = 0)
             draw.text((0, 26), 'Aussen: ' + values['A00TER1GEN1TE01'] + u"    ", font = fontTime, fill = 0)
             draw.text((0, 42), 'Innen: ' + values['V00KUE1RUM1TE02'] +  u"    ", font = fontTime, fill = 0)
-            draw.text((40, 42), 'Innen: ' + values['V00WOH1RUM1TE01'] + u"    ", font = fontTime, fill = 0)
+            draw.text((80, 42), 'Innen: ' + values['V00WOH1RUM1TE01'] + u"    ", font = fontTime, fill = 0)
             draw.text((0, 74), 'Status: ' + values['Status'], font = fontStatus, fill = 0)
             epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
             epd.display_frame()
+            epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+            epd.display_frame()            
             image.save('./1.png', "PNG")
     except Exception as e:
         print('Error on', e)
