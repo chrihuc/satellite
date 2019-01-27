@@ -56,7 +56,7 @@ epd.clear_frame_memory(0xFF)
 epd.display_frame()
 
 if True:
-    pix_size = 32 # 32 ging 64 nicht
+    pix_size = 16 # 32 ging 64 nicht
     pixel = Image.new('1', (pix_size,pix_size), 0)
     for x in range(0,epd2in13.EPD_WIDTH,pix_size):
         for y in range(0,epd2in13.EPD_HEIGHT,pix_size):
@@ -121,7 +121,7 @@ def on_message(client, userdata, msg):
     try:
         m_in=(json.loads(message)) #decode json data
 #        draw = ImageDraw.Draw(image)
-#        draw.rectangle((0, 0, image_width, image_height), fill = 255)
+        draw.rectangle((0, 0, image_width, image_height), fill = 255)
         redraw = False
 #        print(m_in)
         if 'Status' in m_in.values():
