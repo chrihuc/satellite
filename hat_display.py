@@ -23,8 +23,6 @@ fontTime = ImageFont.truetype('./display/FreeMonoBold.ttf', 16)
 fontStatus = ImageFont.truetype('./display/FreeMonoBold.ttf', 18)
 #epd.delay_ms(2000)
 
-values = {}
-
 image = Image.new('1', (epd2in13.EPD_HEIGHT, epd2in13.EPD_WIDTH), 255)  # 255: clear the frame
 draw = ImageDraw.Draw(image)
 image_width, image_height  = image.size
@@ -114,6 +112,12 @@ def on_connect(client_data, userdata, flags, rc):
     else:
         print("Bad connection Returned code=",rc)
 
+values = {'Time': '',
+          'A00TER1GEN1TE01': '',
+          'V00KUE1RUM1TE02': '',
+          'V00WOH1RUM1TE01': '',
+          'Status':''}
+
 def on_message(client, userdata, msg):
 #    print(msg.topic + " " + str(msg.payload))
 #    retained = msg.retain
@@ -128,18 +132,18 @@ def on_message(client, userdata, msg):
             values['Status'] = m_in['Value']
             redraw = True
         elif 'A00TER1GEN1TE01' in m_in.values():
-            values['A00TER1GEN1TE01'] = m_in['Value']            
-            redraw = True            
+            values['A00TER1GEN1TE01'] = m_in['Value']
+            redraw = True
         elif 'V00KUE1RUM1TE02' in m_in.values():
-            values['V00KUE1RUM1TE02'] = m_in['Value']            
-            redraw = True            
+            values['V00KUE1RUM1TE02'] = m_in['Value']
+            redraw = True
         elif 'V00WOH1RUM1TE01' in m_in.values():
-            values['V00WOH1RUM1TE01'] = m_in['Value']            
+            values['V00WOH1RUM1TE01'] = m_in['Value']
             redraw = True
         elif 'Time' in m_in.values():
-            values['Time'] = m_in['Value']            
-            redraw = True            
-        if redraw:    
+            values['Time'] = m_in['Value']
+            redraw = True
+        if redraw:
             draw.text((0, 0), 'Time: ' + values['Time'] + u"    ", font = fontTime, fill = 0)
             draw.text((0, 26), 'Aussen: ' + values['A00TER1GEN1TE01'] + u"    ", font = fontTime, fill = 0)
             draw.text((0, 42), 'Innen: ' + values['V00KUE1RUM1TE02'] +  u"    ", font = fontTime, fill = 0)
@@ -148,7 +152,7 @@ def on_message(client, userdata, msg):
             epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
             epd.display_frame()
             epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-            epd.display_frame()            
+            epd.display_frame()
             image.save('./1.png', "PNG")
     except Exception as e:
         print('Error on', e)
