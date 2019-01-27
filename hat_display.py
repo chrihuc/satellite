@@ -53,7 +53,7 @@ epd.display_frame()
 epd.clear_frame_memory(0xFF)
 epd.display_frame()
 
-if True:
+if False:
     pix_size = 16 # 32 ging 64 nicht
     pixel = Image.new('1', (pix_size,pix_size), 0)
     for x in range(0,epd2in13.EPD_WIDTH,pix_size):
@@ -106,7 +106,7 @@ def on_connect(client_data, userdata, flags, rc):
         print("connected OK")
         for topic in topics:
             client.subscribe(topic)
-            print('subscrived',topic)
+            print('subscribed',topic)
     elif client.connected_flag:
         pass
     else:
@@ -144,15 +144,32 @@ def on_message(client, userdata, msg):
             values['Time'] = m_in['Value']
             redraw = True
         if redraw:
+            draw.rectangle((0, 0, image_width, image_height), fill = 255)
             draw.text((0, 0), 'Time: ' + values['Time'] + u"    ", font = fontTime, fill = 0)
+            epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+            epd.display_frame()
+
+            draw.rectangle((0, 0, image_width, image_height), fill = 255)
             draw.text((0, 26), 'Aussen: ' + values['A00TER1GEN1TE01'] + u"    ", font = fontTime, fill = 0)
+            epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+            epd.display_frame()
+
+            draw.rectangle((0, 0, image_width, image_height), fill = 255)
             draw.text((0, 42), 'Innen: ' + values['V00KUE1RUM1TE02'] +  u"    ", font = fontTime, fill = 0)
-            draw.text((80, 42), 'Innen: ' + values['V00WOH1RUM1TE01'] + u"    ", font = fontTime, fill = 0)
+            epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+            epd.display_frame()
+
+            draw.rectangle((0, 0, image_width, image_height), fill = 255)
+            draw.text((80, 42), '/ ' + values['V00WOH1RUM1TE01'] + u"    ", font = fontTime, fill = 0)
+            epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+            epd.display_frame()
+
+            draw.rectangle((0, 0, image_width, image_height), fill = 255)
             draw.text((0, 74), 'Status: ' + values['Status'], font = fontStatus, fill = 0)
             epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
             epd.display_frame()
-            epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-            epd.display_frame()
+#            epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+#            epd.display_frame()
             image.save('./1.png', "PNG")
     except Exception as e:
         print('Error on', e)
