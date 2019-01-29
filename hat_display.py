@@ -35,14 +35,15 @@ epd.clear_frame_memory(0xFF)
 epd.display_frame()
 
 # neu nach working
-epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-epd.display_frame()
-epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-epd.display_frame()
+#epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+#epd.display_frame()
+#epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+#epd.display_frame()
+epd.init(epd.lut_partial_update)
 
-if False:
+if True:
     pix_size = 64 # 32 ging 64 nicht, mit anderem USB Ladegerät ging dann auch 64
-    pixel = Image.new('1', (pix_size,pix_size), 0)
+    pixel = Image.new('1', (pix_size,pix_size), 255)
     for x in range(0,epd2in13.EPD_WIDTH,pix_size):
         for y in range(0,epd2in13.EPD_HEIGHT,pix_size):
             for fc in range(2):
