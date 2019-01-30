@@ -34,11 +34,6 @@ epd.display_frame()
 epd.clear_frame_memory(0xFF)
 epd.display_frame()
 
-# neu nach working
-#epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-#epd.display_frame()
-#epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-#epd.display_frame()
 epd.init(epd.lut_partial_update)
 
 if True:
@@ -53,7 +48,8 @@ if True:
 
 mqtt.Client.connected_flag=False
 client = None
-topics = ["Settings/Status", "Inputs/A00TER1GEN1TE01", "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time']
+topics = ["Settings/Status", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02", 
+          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time']
 ipaddress = constants.mqtt_.server
 port = 1883
 
@@ -98,15 +94,15 @@ def on_connect(client_data, userdata, flags, rc):
 
 values = {'Time': '',
           'A00TER1GEN1TE01': '',
-          'V00KUE1RUM1TE02': '',
-          'V00WOH1RUM1TE01': '',
+          'V00KUE1RUM1TE02': 0,
+          'V00WOH1RUM1TE01': 0,
           'Status':''}
+innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
 
-draw.text((0, 0), 'Time: ' + values['Time'] + u"    ", font = fontTime, fill = 0)
-draw.text((0, 26), 'Aussen: ' + values['A00TER1GEN1TE01'] + u"    ", font = fontTime, fill = 0)
-draw.text((0, 42), 'Innen: ' + values['V00KUE1RUM1TE02'] +  u"    ", font = fontTime, fill = 0)
-draw.text((100, 42), '/ ' + values['V00WOH1RUM1TE01'] + u"    ", font = fontTime, fill = 0)
-draw.text((0, 74), 'Status: ' + values['Status'], font = fontStatus, fill = 0)
+draw.text((0, 0),  'Uhrzeit:', font = fontTime, fill = 0)
+draw.text((0, 26), 'Aussen :', font = fontTime, fill = 0)
+draw.text((0, 42), 'Innen  :', font = fontTime, fill = 0)
+draw.text((0, 74), 'Status :', font = fontStatus, fill = 0)
 epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
 epd.display_frame()
 
@@ -125,28 +121,29 @@ def on_message(client, userdata, msg):
 
         if 'Status' in m_in.values():
             values['Status'] = m_in['Value']
+            draw.text((0, 74), 'Status : ' + values['Status'], font = fontStatus, fill = 0)
             redraw = True
         elif 'A00TER1GEN1TE01' in m_in.values():
             values['A00TER1GEN1TE01'] = m_in['Value']
+            draw.text((0, 26), 'Aussen : ' + values['A00TER1GEN1TE01'] + u"    ", font = fontTime, fill = 0)
             redraw = True
         elif 'V00KUE1RUM1TE02' in m_in.values():
-            values['V00KUE1RUM1TE02'] = m_in['Value']
+            values['V00KUE1RUM1TE02'] = float(m_in['Value'])
+            innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
+            draw.text((0, 42), 'Innen  : ' + str(innenTemp) +  u"    ", font = fontTime, fill = 0)
             redraw = True
         elif 'V00WOH1RUM1TE01' in m_in.values():
-            values['V00WOH1RUM1TE01'] = m_in['Value']
+            values['V00WOH1RUM1TE01'] = float(m_in['Value'])
+            innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
+            draw.text((0, 42), 'Innen  : ' + str(innenTemp) +  u"    ", font = fontTime, fill = 0)            
             redraw = True
         elif 'Time' in msg.topic:
             values['Time'] = m_in['Value']
+            draw.text((0, 0), 'Uhrzeit: ' + values['Time'] + u"    ", font = fontTime, fill = 0)
             redraw = True
         if redraw:
-            draw.text((0, 0), 'Time: ' + values['Time'] + u"    ", font = fontTime, fill = 0)
-            draw.text((0, 26), 'Aussen: ' + values['A00TER1GEN1TE01'] + u"    ", font = fontTime, fill = 0)
-            draw.text((0, 42), 'Innen: ' + values['V00KUE1RUM1TE02'] +  u"    ", font = fontTime, fill = 0)
-            draw.text((100, 42), '/ ' + values['V00WOH1RUM1TE01'] + u"    ", font = fontTime, fill = 0)
-            draw.text((0, 74), 'Status: ' + values['Status'], font = fontStatus, fill = 0)
             epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
             epd.display_frame()
-
             image.save('./1.png', "PNG")
     except Exception as e:
         print('Error on', e)
