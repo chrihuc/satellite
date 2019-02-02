@@ -99,12 +99,18 @@ values = {'Time': '',
           'Status':''}
 innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
 
-draw.text((0, 0),  'Uhrzeit:', font = fontTime, fill = 0)
-draw.text((0, 26), 'Aussen :', font = fontTime, fill = 0)
-draw.text((0, 42), 'Innen  :', font = fontTime, fill = 0)
-draw.text((0, 74), 'Status :', font = fontStatus, fill = 0)
-epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-epd.display_frame()
+marginTop = 19
+marginLeft = 5
+
+def drawAll():
+    draw.text((marginLeft, 0 + marginTop),  'Uhrzeit: ' + values['Time'] + u"    ", font = fontTime, fill = 0)    
+    draw.text((marginLeft, 26 + marginTop), 'Aussen : ' + values['A00TER1GEN1TE01'] + u"    ", font = fontTime, fill = 0)
+    innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
+    draw.text((marginLeft, 42 + marginTop), 'Innen  : ' + str(innenTemp) +  u"    ", font = fontTime, fill = 0)
+    draw.text((marginLeft, 74 + marginTop), 'Status : ' + values['Status'], font = fontTime, fill = 0)    
+    epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
+    epd.display_frame()
+    image.save('./1.png', "PNG")
 
 # ab hier nur partial update
 epd.init(epd.lut_partial_update)
@@ -135,14 +141,7 @@ def on_message(client, userdata, msg):
             values['Time'] = m_in['Value']
             redraw = True
         if redraw:
-            draw.text((0, 74), 'Status : ' + values['Status'], font = fontStatus, fill = 0)
-            draw.text((0, 26), 'Aussen : ' + values['A00TER1GEN1TE01'] + u"    ", font = fontTime, fill = 0)
-            innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
-            draw.text((0, 42), 'Innen  : ' + str(innenTemp) +  u"    ", font = fontTime, fill = 0)
-            draw.text((0, 0), 'Uhrzeit: ' + values['Time'] + u"    ", font = fontTime, fill = 0)
-            epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
-            epd.display_frame()
-            image.save('./1.png', "PNG")
+            drawAll()
     except Exception as e:
         print('Error on', e)
 

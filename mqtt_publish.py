@@ -30,9 +30,9 @@ def handler(obj):
     else:
         return 'non Json'
 
- 
+
 def send_pic():
-    urllib.urlretrieve("http://192.168.192.36/html/cam.jpg", "tuerspi.jpg")
+    urllib.urlretrieve("http://192.168.193.22/html/cam.jpg", "tuerspi.jpg")
     f=open("tuerspi.jpg", "rb") #3.7kiB in same folder
     fileContent = f.read() #String
     byteArr = (bytearray(fileContent)) # working
@@ -43,13 +43,13 @@ def send_pic():
 
 def mqtt_pub(channel, data, retain=True):
     zeit =  time.time()
-    uhr = str(strftime("%Y-%m-%d %H:%M:%S",localtime(zeit)))    
+    uhr = str(strftime("%Y-%m-%d %H:%M:%S",localtime(zeit)))
     if isinstance(data, dict):
         data['ts'] = uhr
         data = json.dumps(data, default=handler, allow_nan=False)
         client.publish(channel, data, qos=1, retain=retain)
     else:
         raise TypeError, 'Data is not a dictionary'
-        
+
 if __name__ == '__main__':
     send_pic()
