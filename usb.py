@@ -4,6 +4,8 @@ import subprocess
 import csv
 import mqtt_publish
 
+from tools import toolbox
+
 import constants
 
 device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
@@ -69,6 +71,7 @@ class usb_key:
 
     @staticmethod
     def send_to_server(devce, value):
+        toolbox.communication.send_message('Aktion detektiert')
         dicti = {'Name': 'USB.'+str(devce), 'Value': value}
 #        server.sendto(str(dicti) ,(constants.server1,constants.broadPort))
         mqtt_publish.mqtt_pub('Inputs/Satellite/USB/'+str(devce),dicti)

@@ -15,6 +15,7 @@ import time
 import json
 
 import constants
+from tools import toolbox
 
 epd = epd2in13.EPD()
 epd.init(epd.lut_full_update)
@@ -49,7 +50,8 @@ if True:
 mqtt.Client.connected_flag=False
 client = None
 topics = ["Settings/Status", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02",
-          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time']
+          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time', "Wetter/Jetzt"]
+
 ipaddress = constants.mqtt_.server
 port = 1883
 
@@ -96,21 +98,27 @@ values = {'Time': '',
           'A00TER1GEN1TE01': '',
           'V00KUE1RUM1TE02': 0,
           'V00WOH1RUM1TE01': 0,
-          'Status':''}
+          'Status':'',
+          'Wetter': {'Value':0, 'Min':0, 'Max':0, 'Status':''}}
 innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
 
 marginTop = 19
 marginLeft = 5
 
-def drawAll():
+def drawAll(hint=None):
+    draw.rectangle((0, 0, image_width, image_height), fill = 255)
     draw.text((marginLeft, 0 + marginTop),  'Uhrzeit: ' + values['Time'] + u"    ", font = fontTime, fill = 0)    
-    draw.text((marginLeft, 26 + marginTop), 'Aussen : ' + values['A00TER1GEN1TE01'] + u"    ", font = fontTime, fill = 0)
+    draw.text((marginLeft, 26 + marginTop), 'Aussen : ' + values['A00TER1GEN1TE01'] + u", Meteo: " + values['Wetter']['Value'], font = fontTime, fill = 0)
+    draw.text((marginLeft, 52 + marginTop), 'Wetter : ' + values['Wetter']['Status'] + u", Min: " + values['Wetter']['Min'] + u", Max: " + values['Wetter']['Max'], font = fontTime, fill = 0)
     innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
     draw.text((marginLeft, 42 + marginTop), 'Innen  : ' + str(innenTemp) +  u"    ", font = fontTime, fill = 0)
-    draw.text((marginLeft, 74 + marginTop), 'Status : ' + values['Status'], font = fontTime, fill = 0)    
+    draw.text((marginLeft, 68 + marginTop), 'Status : ' + values['Status'], font = fontTime, fill = 0)    
+    if hint:
+        draw.text((marginLeft, 94 + marginTop), 'Hinweis : ' + hint, font = fontTime, fill = 0)
     epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
     epd.display_frame()
     image.save('./1.png', "PNG")
+
 
 # ab hier nur partial update
 epd.init(epd.lut_partial_update)
@@ -122,7 +130,6 @@ def on_message(client, userdata, msg):
     try:
         m_in=(json.loads(message)) #decode json data
 
-        draw.rectangle((0, 0, image_width, image_height), fill = 255)
         redraw = False
 
         if 'Status' in m_in.values():
@@ -140,12 +147,19 @@ def on_message(client, userdata, msg):
         elif 'Time' in msg.topic:
             values['Time'] = m_in['Value']
             redraw = True
+        elif 'Wetter' in msg.topic:
+            values['Wetter']['Value'] = m_in['Value']
+            values['Wetter']['Min'] = m_in['Min']
+            values['Wetter']['Max'] = m_in['Max']
+            values['Wetter']['Status'] = m_in['Status']
+            redraw = True
         if redraw:
             drawAll()
     except Exception as e:
         print('Error on', e)
 
 def main():
+    toolbox.communication.register_callback(drawAll)
     connect(ipaddress, port)
 #    while constants.run:
         #draw = ImageDraw.Draw(image)
