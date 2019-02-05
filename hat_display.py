@@ -107,12 +107,12 @@ marginLeft = 5
 
 def drawAll(hint=None):
     draw.rectangle((0, 0, image_width, image_height), fill = 255)
-    draw.text((marginLeft, 0 + marginTop),  'Uhrzeit: ' + values['Time'] + u"    ", font = fontTime, fill = 0)    
+    draw.text((marginLeft, 0 + marginTop),  'Uhrzeit: ' + values['Time'] + u"    ", font = fontTime, fill = 0)
     draw.text((marginLeft, 26 + marginTop), 'Aussen : ' + values['A00TER1GEN1TE01'] + u", Meteo: " + values['Wetter']['Value'], font = fontTime, fill = 0)
     draw.text((marginLeft, 52 + marginTop), 'Wetter : ' + values['Wetter']['Status'] + u", Min: " + values['Wetter']['Min'] + u", Max: " + values['Wetter']['Max'], font = fontTime, fill = 0)
     innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
     draw.text((marginLeft, 42 + marginTop), 'Innen  : ' + str(innenTemp) +  u"    ", font = fontTime, fill = 0)
-    draw.text((marginLeft, 68 + marginTop), 'Status : ' + values['Status'], font = fontTime, fill = 0)    
+    draw.text((marginLeft, 68 + marginTop), 'Status : ' + values['Status'], font = fontTime, fill = 0)
     if hint:
         draw.text((marginLeft, 94 + marginTop), 'Hinweis : ' + hint, font = fontTime, fill = 0)
     epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
@@ -156,6 +156,7 @@ def on_message(client, userdata, msg):
         if redraw:
             drawAll()
     except Exception as e:
+        print(m_in)
         print('Error on', e)
 
 def main():
