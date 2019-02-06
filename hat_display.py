@@ -108,14 +108,14 @@ marginLeft = 5
 def drawAll(hint=None):
     draw.rectangle((0, 0, image_width, image_height), fill = 255)
     draw.text((93, 0 + marginTop), values['Time'], font = fontTime, fill = 0)
-    draw.text((marginLeft, 16 + marginTop), 'Aussen: ' + values['A00TER1GEN1TE01'] + u", Meteo: " + str(values['Wetter']['Value']), font = fontTime, fill = 0)
-    
+    draw.text((marginLeft, 16 + marginTop), 'Aussen: ' + values['A00TER1GEN1TE01'] + u", " + str(values['Wetter']['Value']), font = fontTime, fill = 0)
+
     innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
     draw.text((marginLeft, 32 + marginTop), 'Innen : ' + str(innenTemp) +  u"    ", font = fontTime, fill = 0)
-    
-    draw.text((marginLeft, 48 + marginTop), values['Wetter']['Status'] + u", Min: " + str(values['Wetter']['Min']) + u", Max: " + str(values['Wetter']['Max']), font = fontTime, fill = 0)
 
-    draw.text((marginLeft, 46 + marginTop), 'Status: ' + values['Status'], font = fontTime, fill = 0)
+    draw.text((marginLeft, 48 + marginTop), values['Wetter']['Status'] + u", " + str(values['Wetter']['Min']) + u"/" + str(values['Wetter']['Max']), font = fontTime, fill = 0)
+
+    draw.text((marginLeft, 64 + marginTop), 'Status: ' + values['Status'], font = fontTime, fill = 0)
     if hint:
         draw.text((marginLeft, 80 + marginTop), 'Hinweis : ' + hint, font = fontTime, fill = 0)
     epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
