@@ -49,7 +49,7 @@ if True:
 
 mqtt.Client.connected_flag=False
 client = None
-topics = ["Settings/Status", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02",
+topics = ["Settings/Status", "Settings/Alarmanlage", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02",
           "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time', "Wetter/Jetzt"]
 
 ipaddress = constants.mqtt_.server
@@ -99,6 +99,7 @@ values = {'Time': '',
           'V00KUE1RUM1TE02': 0,
           'V00WOH1RUM1TE01': 0,
           'Status':'',
+          'Alarmanlage':'',
           'Wetter': {'Value':0, 'Min':0, 'Max':0, 'Status':''}}
 innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
 
@@ -115,7 +116,10 @@ def drawAll(hint=None):
         hintBlock = True
         draw.text((marginLeft, 32 + marginTop), hint, font = fontTime, fill = 0)
     else:
-        draw.text((93, 0 + marginTop), values['Time'], font = fontTime, fill = 0)
+        if values['Alarmanlage'] == 'True':
+            draw.text((marginLeft, 0 + marginTop), values['Time'] + " Alarmanlage ein", font = fontTime, fill = 0)
+        else:
+            draw.text((93, 0 + marginTop), values['Time'], font = fontTime, fill = 0)
         draw.text((marginLeft, 16 + marginTop), 'Aussen: ' + values['A00TER1GEN1TE01'] + u", " + str(values['Wetter']['Value']), font = fontTime, fill = 0)
     
         innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
@@ -150,6 +154,9 @@ def on_message(client, userdata, msg):
         if 'Status' in m_in.values():
             values['Status'] = m_in['Value']
             redraw = True
+        elif 'Alarmanlage' in m_in.values():
+            values['Alarmanlage'] = m_in['Value']
+            redraw = True            
         elif 'A00TER1GEN1TE01' in m_in.values():
             values['A00TER1GEN1TE01'] = m_in['Value']
             redraw = True
