@@ -134,7 +134,7 @@ def drawAll(hint=None):
     epd.display_frame()
 #    image.save('./1.png', "PNG")
     if hint:
-        time.sleep(5)
+        time.sleep(2)
         hintBlock = False
         drawAll()
 
