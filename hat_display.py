@@ -12,6 +12,7 @@ from PIL import ImageFont
 from time import localtime,strftime
 import paho.mqtt.client as mqtt
 import time
+import threading
 import json
 
 import constants
@@ -49,7 +50,7 @@ if True:
 
 mqtt.Client.connected_flag=False
 client = None
-topics = ["Settings/Status", "Settings/Alarmanlage", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02",
+topics = ["Settings/Status", "Settings/Alarmanlage" , "Settings/Alarmstatus", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02",
           "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time', "Wetter/Jetzt"]
 
 ipaddress = constants.mqtt_.server
@@ -100,6 +101,7 @@ values = {'Time': '',
           'V00WOH1RUM1TE01': 0,
           'Status':'',
           'Alarmanlage':'',
+          'Alarmstatus':'aus',
           'Wetter': {'Value':0, 'Min':0, 'Max':0, 'Status':''}}
 innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
 
@@ -109,7 +111,7 @@ hintBlock = False
 
 def drawAll(hint=None):
     global hintBlock
-    if hintBlock:
+    if hintBlock and not hint:
         return
     draw.rectangle((0, 0, image_width, image_height), fill = 255)
     if hint:
@@ -138,6 +140,11 @@ def drawAll(hint=None):
         hintBlock = False
         drawAll()
 
+def clear_A00TER1GEN1TE01():
+    values['A00TER1GEN1TE01'] = '-.-'
+    drawAll()
+
+A00TER1GEN1TE01_timer = threading.Timer(10 * 60, clear_A00TER1GEN1TE01)
 
 # ab hier nur partial update
 epd.init(epd.lut_partial_update)
@@ -158,7 +165,9 @@ def on_message(client, userdata, msg):
             values['Alarmanlage'] = m_in['Value']
             redraw = True            
         elif 'A00TER1GEN1TE01' in m_in.values():
+            A00TER1GEN1TE01_timer.cancel()
             values['A00TER1GEN1TE01'] = m_in['Value']
+            A00TER1GEN1TE01_timer.start()
             redraw = True
         elif 'V00KUE1RUM1TE02' in m_in.values():
             values['V00KUE1RUM1TE02'] = float(m_in['Value'])
