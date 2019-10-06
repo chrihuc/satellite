@@ -13,10 +13,11 @@ _int_adr = {}
 
 for _input in constants.GPIO_IN:
     if _input == constants.name:
-        _id = constants.GPIO_IN[_input][1]
-        _hks = constants.GPIO_IN[_input][0]
-        GPIO.setup(_id, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        _int_adr[_id] = _hks
+        for _gpio in constants.GPIO_IN[_input]:
+            _id = _gpio[1]
+            _hks = _gpio[0]
+            GPIO.setup(_id, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            _int_adr[_id] = _hks
 
 def main():
     tuer = gpio_input_monitoring()
