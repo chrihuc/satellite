@@ -178,8 +178,10 @@ class zwave(object):
                 self.network.nodes[node_id].set_dimmer(dimmer, 50)
             else:
                 self.network.nodes[node_id].set_dimmer(dimmer, 0)
-        else:
+        elif isinstance(wert,str):
             self.network.nodes[node_id].set_dimmer(dimmer, eval(wert))
+        else:
+            self.network.nodes[node_id].set_dimmer(dimmer, wert)            
         return True       
         
     def set_device(self, data_ev): 

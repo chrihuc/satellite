@@ -1,0 +1,23 @@
+[Unit]
+Description=python satellite
+After=network.target
+# After=mosquitto.service mysql.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+WorkingDirectory=/home/pi/satellite
+ExecStart=/usr/bin/python3 /home/pi/satellite/main.py
+
+[Install]
+WantedBy=multi-user.target
+
+# copy to /etc/systemd/system/
+# sudo nano /etc/systemd/system/pysat.service
+# sudo chmod 755 /etc/systemd/system/pysat.service
+# sudo systemctl daemon-reload
+# sudo systemctl status testpy
+# sudo systemctl reenable pysat

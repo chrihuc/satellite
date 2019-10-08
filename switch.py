@@ -47,8 +47,9 @@ class gpio_input_monitoring:
 #                    server.sendto(str(dicti),(constants.server1,constants.broadPort))
                     mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/' + str(_input),dicti)                    
             counter += 1
-            time.sleep(0.1)
-            if counter >= 1800:
+            time.sleep(0.05)
+            if counter >= 100:
+                print(self.alt)
                 counter = 0
 
 if  __name__ =='__main__':main()
