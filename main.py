@@ -38,7 +38,7 @@ def git_update():
     g = git.cmd.Git()
     g.reset('--hard')
     g.pull()
-    print "Update done, exiting"
+    print("Update done, exiting")
     constants.run = False
     sys.exit()
 
@@ -59,7 +59,8 @@ def supervise_threads(tliste):
     while constants.run:
         for t in tliste:
             if not t in threading.enumerate():
-                print t.name
+                print(t.name)
+                constants.run = False
                 sys.exit()
                 exit()
         for i in range(0,60):

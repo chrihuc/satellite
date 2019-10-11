@@ -51,7 +51,7 @@ if True:
 mqtt.Client.connected_flag=False
 client = None
 topics = ["Settings/Status", "Settings/Alarmanlage" , "Settings/Alarmstatus", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02",
-          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time', "Wetter/Jetzt"]
+          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time', "Wetter/Jetzt", "Inputs/A00EIN1GEN1TE01"]
 
 ipaddress = constants.mqtt_.server
 port = 1883
@@ -136,7 +136,7 @@ def drawAll(hint=None):
     epd.display_frame()
 #    image.save('./1.png', "PNG")
     if hint:
-        time.sleep(2)
+        time.sleep(1)
         hintBlock = False
         drawAll()
 
@@ -169,6 +169,11 @@ def on_message(client, userdata, msg):
             values['A00TER1GEN1TE01'] = m_in['Value']
             A00TER1GEN1TE01_timer.start()
             redraw = True
+        elif 'A00EIN1GEN1TE01' in m_in.values():
+            A00TER1GEN1TE01_timer.cancel()
+            values['A00TER1GEN1TE01'] = m_in['Value']
+            A00TER1GEN1TE01_timer.start()
+            redraw = True            
         elif 'V00KUE1RUM1TE02' in m_in.values():
             values['V00KUE1RUM1TE02'] = float(m_in['Value'])
             redraw = True
