@@ -137,6 +137,9 @@ def on_message(client, userdata, msg):
                     take_pic()
                 elif constants.raspicam and m_in['Name'] == 'Record_Video':
                     take_vid()
+                elif constants.PiInputs and True:
+                    print(m_in)
+#                    eingang.set_device(m_in)
     except:
         pass
 

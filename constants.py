@@ -78,6 +78,7 @@ debug_text = ''
 run = True
 LEDoutputs = {'KellerSPi':'Vm1ZIM1SAT1LI01'}
 GPIO_IN = {'TuerSPIon':(('V00FLU1TUE1DI01', 2),('V00FLU1TUE1DI02', 3))}
+GPIO_OUT = (5)
 
 if __name__ == '__main__':
     print name, ownIP

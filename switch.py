@@ -19,6 +19,9 @@ for _input in constants.GPIO_IN:
             GPIO.setup(_id, GPIO.IN, pull_up_down=GPIO.PUD_UP)
             _int_adr[_id] = _hks
 
+for output in constants.GPIO_OUT:
+    GPIO.setup(output,GPIO.OUT)    
+
 def main():
     tuer = gpio_input_monitoring()
     tuer.monitor()
@@ -51,5 +54,10 @@ class gpio_input_monitoring:
             if counter >= 100:
                 print(self.alt)
                 counter = 0
+                
+    def set_device(self, output):
+        GPIO.output(output,GPIO.HIGH)
+        time.sleep(1)
+        GPIO.output(output,GPIO.LOW)        
 
 if  __name__ =='__main__':main()

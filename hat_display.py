@@ -51,7 +51,7 @@ if True:
 mqtt.Client.connected_flag=False
 client = None
 topics = ["Settings/Status", "Settings/Alarmanlage" , "Settings/Alarmstatus", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02",
-          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time', "Wetter/Jetzt", "Inputs/A00EIN1GEN1TE01"]
+          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time', "Wetter/Jetzt", "Inputs/A00EIN1GEN1TE01", "Message/DispPi"]
 
 ipaddress = constants.mqtt_.server
 port = 1883
@@ -136,7 +136,7 @@ def drawAll(hint=None):
     epd.display_frame()
 #    image.save('./1.png', "PNG")
     if hint:
-        time.sleep(1)
+        time.sleep(0.5)
         hintBlock = False
         drawAll()
 
@@ -157,6 +157,7 @@ def on_message(client, userdata, msg):
         m_in=(json.loads(message)) #decode json data
 
         redraw = False
+        hint = None
 
         if 'Status' in m_in.values():
             values['Status'] = m_in['Value']
@@ -189,8 +190,11 @@ def on_message(client, userdata, msg):
             values['Wetter']['Max'] = m_in['Max']
             values['Wetter']['Status'] = m_in['Status']
             redraw = True
+        elif 'Message' in msg.topic:
+            hint = m_in['message']
+            redraw = True            
         if redraw:
-            drawAll()
+            drawAll(hint)
     except Exception as e:
         print('Error on', e)
 
