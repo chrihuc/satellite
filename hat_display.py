@@ -152,6 +152,7 @@ epd.init(epd.lut_partial_update)
 def on_message(client, userdata, msg):
 #    print(msg.topic + " " + str(msg.payload))
 #    retained = msg.retain
+    global A00TER1GEN1TE01_timer
     message = str(msg.payload.decode("utf-8"))
     try:
         m_in=(json.loads(message)) #decode json data
@@ -168,11 +169,13 @@ def on_message(client, userdata, msg):
         elif 'A00TER1GEN1TE01' in m_in.values():
             A00TER1GEN1TE01_timer.cancel()
             values['A00TER1GEN1TE01'] = m_in['Value']
+            A00TER1GEN1TE01_timer = threading.Timer(10 * 60, clear_A00TER1GEN1TE01)
             A00TER1GEN1TE01_timer.start()
             redraw = True
         elif 'A00EIN1GEN1TE01' in m_in.values():
             A00TER1GEN1TE01_timer.cancel()
             values['A00TER1GEN1TE01'] = m_in['Value']
+            A00TER1GEN1TE01_timer = threading.Timer(10 * 60, clear_A00TER1GEN1TE01)
             A00TER1GEN1TE01_timer.start()
             redraw = True            
         elif 'V00KUE1RUM1TE02' in m_in.values():
