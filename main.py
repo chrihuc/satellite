@@ -137,8 +137,11 @@ def on_message(client, userdata, msg):
                     take_pic()
                 elif constants.raspicam and m_in['Name'] == 'Record_Video':
                     take_vid()
-                elif constants.PiInputs and True:
-                    print(m_in)
+                elif constants.PiInputs and 'adress' in m_in:
+                    if '.' in m_in['adress']:
+                        if m_in['adress'].split('.')[2] == 'DO':
+                            eingang.set_device(m_in['adress'].split('.')[3])
+#                    print(m_in)
 #                    eingang.set_device(m_in)
     except:
         pass

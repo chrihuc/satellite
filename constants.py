@@ -81,4 +81,4 @@ GPIO_IN = {'TuerSPIon':(('V00FLU1TUE1DI01', 2),('V00FLU1TUE1DI02', 3))}
 GPIO_OUT = (5)
 
 if __name__ == '__main__':
-    print name, ownIP
+    print(name, ownIP)

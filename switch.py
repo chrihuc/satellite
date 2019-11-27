@@ -42,7 +42,7 @@ class gpio_input_monitoring:
                 wert = GPIO.input(_input)
                 pre_wert = self.alt[_input]
                 dicti = {'Value':wert, 'Name': 'GPIO.' + constants.name + '.' + str(_input)}
-                if wert <> pre_wert:
+                if wert != pre_wert:
 #                    server.sendto(str(dicti),(constants.server1,constants.broadPort))
                     mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/' + str(_input),dicti)
                     self.alt[_input] = wert
@@ -56,8 +56,9 @@ class gpio_input_monitoring:
                 counter = 0
                 
     def set_device(self, output):
-        GPIO.output(output,GPIO.HIGH)
-        time.sleep(1)
-        GPIO.output(output,GPIO.LOW)        
+        if output in constants.GPIO_OUT:
+            GPIO.output(output,GPIO.HIGH)
+            time.sleep(1)
+            GPIO.output(output,GPIO.LOW)        
 
 if  __name__ =='__main__':main()
