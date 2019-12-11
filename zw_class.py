@@ -189,9 +189,11 @@ class zwave(object):
         if data_ev.get('Device') in zw_config.switches:
             print data_ev
             return self._set_switch(zw_config.switches[data_ev['Device']][0],zw_config.switches[data_ev['Device']][1],data_ev['Value'])
-        if data_ev.get('Device') in zw_config.dimmer:
+        elif data_ev.get('Device') in zw_config.dimmer:
             print data_ev
             return self._set_dimmer(zw_config.dimmer[data_ev['Device']][0],zw_config.dimmer[data_ev['Device']][1],data_ev['Value'])
+        elif data_ev['adress'].split('.')[3] == 'Switch':
+            return self._set_switch(data_ev['adress'].split('.')[4],long(float(data_ev['adress'].split('.')[5])),data_ev['Value'])
 
 if __name__ == "__main__":
     zwnw = zwave()

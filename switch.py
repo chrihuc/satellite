@@ -20,7 +20,8 @@ for _input in constants.GPIO_IN:
             _int_adr[_id] = _hks
 
 for output in constants.GPIO_OUT:
-    GPIO.setup(output,GPIO.OUT)    
+    GPIO.setup(output,GPIO.OUT)
+    GPIO.output(output,False)    
 
 def main():
     tuer = gpio_input_monitoring()
@@ -57,8 +58,8 @@ class gpio_input_monitoring:
                 
     def set_device(self, output):
         if output in constants.GPIO_OUT:
-            GPIO.output(output,GPIO.HIGH)
+            GPIO.output(output,True)
             time.sleep(1)
-            GPIO.output(output,GPIO.LOW)        
+            GPIO.output(output,False)        
 
 if  __name__ =='__main__':main()
