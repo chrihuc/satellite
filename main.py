@@ -141,7 +141,7 @@ def on_message(client, userdata, msg):
                     if '.' in m_in['adress']:
                         if m_in['adress'].split('.')[2] == 'DO':
                             eingang.set_device(m_in['adress'].split('.')[3])
-                elif constants.zwave and 'ZWave' in msg.topic:
+                elif constants.zwave and 'ZWave' in m_in['adress']:
                     if '.' in m_in['adress']:
                         if m_in['adress'].split('.')[2] == 'ZWave':
                             zwa.set_device(m_in)                            

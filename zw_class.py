@@ -161,6 +161,7 @@ class zwave(object):
         self.network.stop()
 
     def _set_switch(self,node_id , switch, wert):
+        print(node_id , switch, wert)
         if wert == 'Toggle':
             cur_val = self.network.nodes[node_id].get_switch_state(switch)
             self.network.nodes[node_id].set_switch(switch, not cur_val)
@@ -172,6 +173,7 @@ class zwave(object):
         return True
         
     def _set_dimmer(self,node_id , dimmer, wert):
+        print(node_id , dimmer, wert)
         if wert == 'Toggle':
             cur_val = self.network.nodes[node_id].get_dimmer_level(dimmer)
             if cur_val == 0:
@@ -192,8 +194,12 @@ class zwave(object):
         elif data_ev.get('Device') in zw_config.dimmer:
             print data_ev
             return self._set_dimmer(zw_config.dimmer[data_ev['Device']][0],zw_config.dimmer[data_ev['Device']][1],data_ev['Value'])
-        elif data_ev['adress'].split('.')[3] == 'Switch':
-            return self._set_switch(data_ev['adress'].split('.')[4],long(float(data_ev['adress'].split('.')[5])),data_ev['Value'])
+        elif 'adress' in data_ev:
+            print data_ev['adress']
+            if len(data_ev['adress'].split('.')) > 3 and data_ev['adress'].split('.')[3] == 'Switch':
+                return self._set_switch(int(data_ev['adress'].split('.')[4]),long(float(data_ev['adress'].split('.')[5])),data_ev['Value'])
+            if len(data_ev['adress'].split('.')) > 3 and data_ev['adress'].split('.')[3] == 'Dimmer':
+                return self._set_dimmer(int(data_ev['adress'].split('.')[4]),long(float(data_ev['adress'].split('.')[5])),data_ev['Value'])
 
 if __name__ == "__main__":
     zwnw = zwave()
