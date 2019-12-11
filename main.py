@@ -49,6 +49,7 @@ def send_heartbeat():
         dicti['Name'] = 'Hrtbt.' + constants.name
 #        hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))
         mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/Hrtbt/' + constants.name,dicti)
+        print("hearbeat send")
         for i in range(0,60):
             if not constants.run:
                 break
