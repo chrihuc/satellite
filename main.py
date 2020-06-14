@@ -49,7 +49,7 @@ def send_heartbeat():
         dicti['Name'] = 'Hrtbt.' + constants.name
 #        hbtsocket.sendto(str(dicti),(constants.server1,constants.broadPort))
         mqtt_publish.mqtt_pub('Inputs/Satellite/' + constants.name + '/Hrtbt/' + constants.name,dicti)
-        print("hearbeat send")
+#        print("hearbeat send")
         for i in range(0,60):
             if not constants.run:
                 break
@@ -234,7 +234,7 @@ if constants.zwave:
     from zw_class import zwave
     zwa = zwave()
     zw_sup = threading.Thread(name='ZWave', target=zwa.start, args=[])
-    threadliste.append(zw_sup)
+#    threadliste.append(zw_sup)
     zw_sup.start()
 
 if constants.enoc:

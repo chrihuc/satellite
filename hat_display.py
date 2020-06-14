@@ -51,7 +51,7 @@ if True:
 mqtt.Client.connected_flag=False
 client = None
 topics = ["Settings/Status", "Settings/Alarmanlage" , "Settings/Alarmstatus", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02",
-          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Time', "Wetter/Jetzt", "Inputs/A00EIN1GEN1TE01", "Message/DispPi"]
+          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Inputs/AlleFensterZu', 'Time', "Wetter/Jetzt", "Inputs/A00EIN1GEN1TE01", "Message/DispPi"]
 
 ipaddress = constants.mqtt_.server
 port = 1883
@@ -102,6 +102,7 @@ values = {'Time': '',
           'Status':'',
           'Alarmanlage':'',
           'Alarmstatus':'aus',
+          'FensterZu' : 0,
           'Wetter': {'Value':0, 'Min':0, 'Max':0, 'Status':''}}
 innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
 
@@ -131,6 +132,11 @@ def drawAll(hint=None):
         draw.text((marginLeft, 64 + marginTop), str(values['Wetter']['Min']) + u"/" + str(values['Wetter']['Max']), font = fontTime, fill = 0)
     
         draw.text((marginLeft, 80 + marginTop), 'Status: ' + values['Status'], font = fontTime, fill = 0)
+        
+        if values['FensterZu'] == 1:
+            draw.rectangle((marginLeft, 80 + marginTop, 5, 5), fill = 0)
+        else:
+            draw.rectangle((marginLeft, 80 + marginTop, 5, 5), fill = 200)
     
     epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
     epd.display_frame()
@@ -159,7 +165,8 @@ def on_message(client, userdata, msg):
 
         redraw = False
         hint = None
-
+        if 'Value' in m_in:
+            m_in['Value'] = str(m_in['Value'])
         if 'Status' in m_in.values():
             values['Status'] = m_in['Value']
             redraw = True
@@ -195,7 +202,10 @@ def on_message(client, userdata, msg):
             redraw = True
         elif 'Message' in msg.topic:
             hint = m_in['message']
-            redraw = True            
+            redraw = True     
+        elif 'FensterZu' in msg.topic:
+            values['FensterZu'] = m_in['Value']
+            #redraw = True              
         if redraw:
             drawAll(hint)
     except Exception as e:

@@ -77,7 +77,7 @@ class zwave(object):
         print("Hello from node : {}.".format(node))
     
     def louie_value_update(self, network, node, value):
-        print "value changed"
+#        print "value changed"
         try:
 #            print zw_config.inputs[node.home_id][value.value_id], int(value.data)
             dicti = {'Value': str(int(value.data))}
@@ -166,21 +166,27 @@ class zwave(object):
             cur_val = self.network.nodes[node_id].get_switch_state(switch)
             self.network.nodes[node_id].set_switch(switch, not cur_val)
         else:
-            if eval(wert) > 0:
-                self.network.nodes[node_id].set_switch(switch, True)
+            if isinstance(wert,basestring):
+                if eval(wert) > 0:
+                    self.network.nodes[node_id].set_switch(switch, True)
+                else:
+                    self.network.nodes[node_id].set_switch(switch, bool(eval(wert)))
             else:
-                self.network.nodes[node_id].set_switch(switch, bool(eval(wert)))
+                if wert > 0:
+                    self.network.nodes[node_id].set_switch(switch, True)
+                else:
+                    self.network.nodes[node_id].set_switch(switch, bool(wert))                
         return True
         
     def _set_dimmer(self,node_id , dimmer, wert):
-        print(node_id , dimmer, wert)
+        print('set dimmer', node_id , dimmer, wert)
         if wert == 'Toggle':
             cur_val = self.network.nodes[node_id].get_dimmer_level(dimmer)
             if cur_val == 0:
                 self.network.nodes[node_id].set_dimmer(dimmer, 50)
             else:
                 self.network.nodes[node_id].set_dimmer(dimmer, 0)
-        elif isinstance(wert,str):
+        elif isinstance(wert,basestring):
             self.network.nodes[node_id].set_dimmer(dimmer, eval(wert))
         else:
             self.network.nodes[node_id].set_dimmer(dimmer, wert)            
@@ -189,10 +195,10 @@ class zwave(object):
     def set_device(self, data_ev): 
 #       TODO do threaded with stop criteria
         if data_ev.get('Device') in zw_config.switches:
-            print data_ev
+#            print data_ev
             return self._set_switch(zw_config.switches[data_ev['Device']][0],zw_config.switches[data_ev['Device']][1],data_ev['Value'])
-        elif data_ev.get('Device') in zw_config.dimmer:
-            print data_ev
+        if data_ev.get('Device') in zw_config.dimmer:
+#            print data_ev
             return self._set_dimmer(zw_config.dimmer[data_ev['Device']][0],zw_config.dimmer[data_ev['Device']][1],data_ev['Value'])
         elif 'adress' in data_ev:
             print data_ev['adress']
