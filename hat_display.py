@@ -134,9 +134,11 @@ def drawAll(hint=None):
         draw.text((marginLeft, 80 + marginTop), 'Status: ' + values['Status'], font = fontTime, fill = 0)
         
         if values['FensterZu'] == 1:
-            draw.rectangle((marginLeft, 80 + marginTop, 5, 5), fill = 0)
+            draw.text((210, 80 + marginTop), 'X', font = fontTime, fill = 0)
+            draw.rectangle((200, 80 + marginTop, 5, 5), fill = 0)
         else:
-            draw.rectangle((marginLeft, 80 + marginTop, 5, 5), fill = 200)
+            draw.text((210, 80 + marginTop), 'O', font = fontTime, fill = 0)
+            draw.rectangle((200, 80 + marginTop, 5, 5), fill = 200)
     
     epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
     epd.display_frame()
