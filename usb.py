@@ -80,6 +80,8 @@ class usb_key:
         for device in iter(self.usb_monitor.poll, None):
             devce = device.get('ID_SERIAL_SHORT')
             db_out('change',devce, device.action)
+            dicti = {'Name': 'USB.'+str(devce), 'Action': device.action}
+            mqtt_publish.mqtt_pub('logging',dicti)
             if device.action =="remove":
                 self.send_to_server(devce, 0)
                 usb_devs = self.check_att_sticks()

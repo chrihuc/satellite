@@ -51,7 +51,7 @@ if True:
 mqtt.Client.connected_flag=False
 client = None
 topics = ["Settings/Status", "Settings/Alarmanlage" , "Settings/Alarmstatus", "Inputs/A00TER1GEN1TE01", "Inputs/V00KUE1RUM1TE02",
-          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Inputs/AlleFensterZu', 'Time', "Wetter/Jetzt", "Inputs/A00EIN1GEN1TE01", "Message/DispPi"]
+          "Inputs/V00WOH1RUM1TE01", "Inputs/V00WOH1RUM1TE02", 'Inputs/AlleFensterZu', 'Inputs/TuerenVerriegelt', 'Time', "Wetter/Jetzt", "Inputs/A00EIN1GEN1TE01", "Message/DispPi"]
 
 ipaddress = constants.mqtt_.server
 port = 1883
@@ -103,6 +103,7 @@ values = {'Time': '',
           'Alarmanlage':'',
           'Alarmstatus':'aus',
           'FensterZu' : 0,
+          'TuerenVerriegelt' :0,
           'Wetter': {'Value':0, 'Min':0, 'Max':0, 'Status':''}}
 innenTemp = (values['V00WOH1RUM1TE01'] + values['V00KUE1RUM1TE02']) / 2
 
@@ -133,12 +134,15 @@ def drawAll(hint=None):
     
         draw.text((marginLeft, 80 + marginTop), 'Status: ' + values['Status'], font = fontTime, fill = 0)
         
-        if values['FensterZu'] == 1:
-            draw.text((210, 80 + marginTop), 'X', font = fontTime, fill = 0)
-            draw.rectangle((200, 80 + marginTop, 5, 5), fill = 0)
+        if float(values['FensterZu']) == 1:
+            draw.text((210, 75 + marginTop), 'x', font = fontTime, fill = 0)
         else:
-            draw.text((210, 80 + marginTop), 'O', font = fontTime, fill = 0)
-            draw.rectangle((200, 80 + marginTop, 5, 5), fill = 200)
+            draw.text((210, 75 + marginTop), 'o', font = fontTime, fill = 0)
+            
+        if float(values['TuerenVerriegelt']) == 1:
+            draw.text((220, 80 + marginTop), 'X', font = fontTime, fill = 0)
+        else:
+            draw.text((220, 80 + marginTop), 'O', font = fontTime, fill = 0)
     
     epd.set_frame_memory(image.transpose(Image.ROTATE_90), 0, 0)
     epd.display_frame()
@@ -207,7 +211,8 @@ def on_message(client, userdata, msg):
             redraw = True     
         elif 'FensterZu' in msg.topic:
             values['FensterZu'] = m_in['Value']
-            #redraw = True              
+        elif 'TuerenVerriegelt' in msg.topic:
+            values['TuerenVerriegelt'] = m_in['Value']             
         if redraw:
             drawAll(hint)
     except Exception as e:
